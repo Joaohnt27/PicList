@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LogoutIconButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="cornerRadius">24dp</item>
+        <item name="icon">@drawable/baseline_logout_24</item>
+        <item name="iconTint">@android:color/white</item>
+        <item name="backgroundTint">@color/green</item>
+        <item name="rippleColor">@color/green</item>
+        <item name="iconPadding">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+</resources>
