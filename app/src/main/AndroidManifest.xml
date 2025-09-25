@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ListaCompras">
         <activity android:name=".CadastroActivity"/>
-        <activity android:name=".AddListaActivity" />
+        <activity android:name=".AddListaActivity"/>
+        <activity android:name=".AddItemActivity"/>
         <activity android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
