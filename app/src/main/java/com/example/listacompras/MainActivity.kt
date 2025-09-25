@@ -69,7 +69,6 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fabAdd)
             .setOnClickListener {
-                Toast.makeText(this, "Nova lista criada! ;)", Toast.LENGTH_SHORT).show()
                 addListaLauncher.launch(Intent(this, AddListaActivity::class.java))
             }
     }

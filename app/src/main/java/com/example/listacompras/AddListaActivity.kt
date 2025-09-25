@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import android.widget.ImageView
+import android.widget.Toast
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.button.MaterialButton
 
@@ -43,7 +44,14 @@ class AddListaActivity : AppCompatActivity() {
                 putExtra("titulo", nome)
                 putExtra("imageUri", imageUri?.toString())
             }
+            Toast.makeText(this, "Nova lista criada! ;)", Toast.LENGTH_SHORT).show()
             setResult(Activity.RESULT_OK, data)
+            finish()
+        }
+
+        findViewById<MaterialButton>(R.id.btnCancelar).setOnClickListener {
+            Toast.makeText(this, "Criação de lista cancelada.", Toast.LENGTH_SHORT).show()
+            setResult(Activity.RESULT_CANCELED)
             finish()
         }
     }
