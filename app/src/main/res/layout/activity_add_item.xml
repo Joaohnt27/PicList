@@ -12,84 +12,93 @@
         android:layout_height="wrap_content"
         android:text="Adicionar item"
         android:textStyle="bold"
-        android:textSize="28sp"
+        android:textSize="22sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilNome"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
         app:layout_constraintTop_toBottomOf="@id/tvTitulo"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"
         app:boxStrokeColor="@color/green"
-        app:hintTextColor="@color/green"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:hintTextColor="@color/green">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etNome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nome do item"/>
+            android:hint="Nome do item"
+            android:textColor="@color/black"
+            android:inputType="text"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintRow"
-        android:layout_width="match_parent"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilQuantidade"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/tilNome"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilQuantidade"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"
+        app:boxStrokeColor="@color/green"
+        app:hintTextColor="@color/green">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etQuantidade"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:boxStrokeColor="@color/green"
-            app:hintTextColor="@color/green"
-            android:layout_marginEnd="8dp"> <!-- Margem para separar do Spinner -->
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etQuantidade"
-                android:layout_width="184dp"
-                android:layout_height="wrap_content"
-                android:hint="Quantidade"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:hint="Quantidade"
+            android:inputType="number"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilUnKg"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilUnKg"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tilQuantidade"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="20dp"
+        app:boxStrokeColor="@color/green"
+        app:hintTextColor="@color/green">
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/tilQuantidade"
-            app:layout_constraintTop_toTopOf="parent"
-            app:boxStrokeColor="@color/green"
-            app:hintTextColor="@color/green">
-
-            <android.widget.Spinner
-                android:id="@+id/spinnerUnKg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:text="Unidade"
+            android:textColor="@color/green"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+        <android.widget.Spinner
+            android:id="@+id/spinnerUnKg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilCategoria"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@id/constraintRow"
+        app:layout_constraintTop_toBottomOf="@id/tilUnKg"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"
         app:boxStrokeColor="@color/green"
-        app:hintTextColor="@color/green"
-        app:layout_constraintEnd_toEndOf="parent">
-
+        app:hintTextColor="@color/black">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Categoria"
+            android:textColor="@color/green"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
         <android.widget.Spinner
             android:id="@+id/spinnerCategoria"
             android:layout_width="match_parent"
@@ -101,25 +110,29 @@
         style="@style/Widget.MaterialComponents.Button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
         android:text="Adicionar"
         android:textAllCaps="false"
+        android:textColor="@color/white"
         app:backgroundTint="@color/green"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="344dp"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintTop_toBottomOf="@id/tilCategoria" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCancelar"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Cancelar"
-        android:textColor="@color/green"
         android:layout_marginTop="10dp"
-        app:backgroundTint="@color/gray"
+        android:text="Cancelar"
         android:textAllCaps="false"
-        app:layout_constraintTop_toBottomOf="@id/btnSalvar"
+        android:textColor="@color/green"
+        app:backgroundTint="@color/gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/btnSalvar" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,27 +13,61 @@ class AddItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_item)
 
-        val spinner = findViewById<Spinner>(R.id.spinnerUnKg)
+        // Configuração do Spinner de Unidades (un ou kg)
+        val spinnerUnKg = findViewById<Spinner>(R.id.spinnerUnKg)
         val options = arrayOf("un", "kg")
 
-        val adapter = ArrayAdapter(
+        val adapterUnKg = ArrayAdapter(
             this,
-            android.R.layout.simple_spinner_item, // Layout padrão para spinner
+            android.R.layout.simple_spinner_item, // Layout para o Spinner de unidades
             options
         ).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) // Layout para o dropdown
         }
 
-        spinner.adapter = adapter // Atribui o adapter ao Spinner
+        spinnerUnKg.adapter = adapterUnKg // Atribui o adapter ao Spinner de unidades
 
+        // Configuração do Spinner de categorias
+        val spinnerCategoria = findViewById<Spinner>(R.id.spinnerCategoria)
+        val categorias = arrayOf("Frutas", "Vegetais", "Laticínios", "Carnes", "Grãos") // Categorias predefinidas
+
+        val adapterCategoria = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            categorias
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) // Layout para o dropdown
+        }
+        spinnerCategoria.adapter = adapterCategoria // Atribui o adapter ao Spinner de categorias
+
+        // Configuração do botão de salvar
         findViewById<MaterialButton>(R.id.btnSalvar).setOnClickListener {
             val nome = findViewById<TextInputEditText>(R.id.etNome).text?.toString()?.trim().orEmpty()
             val quantidade = findViewById<TextInputEditText>(R.id.etQuantidade).text?.toString()?.toIntOrNull()
-            val unidade = spinner.selectedItem.toString()
+            val unidade = spinnerUnKg.selectedItem.toString()
+            val categoria = spinnerCategoria.selectedItem.toString()
 
-            if (nome.isEmpty() || quantidade == null) {  // Se o nome ou quantidade estiverem vazios, não salva
+            // Validação: Verificar se o nome e a quantidade são válidos
+            if (nome.isEmpty() || quantidade == null) {
+                // Caso os dados sejam inválidos, exibe um aviso e não salva
                 return@setOnClickListener
             }
+
+            // Cria o item e salva em memória
+            val item = Item(nome, quantidade, unidade, categoria)
+            ItensMemory.itens.add(item)  // Adiciona o item à lista de itens na memória
+
+            // Limpar os campos para adicionar outro item
+            findViewById<TextInputEditText>(R.id.etNome).text?.clear()
+            findViewById<TextInputEditText>(R.id.etQuantidade).text?.clear()
+            spinnerCategoria.setSelection(0) // Resetando o Spinner de categorias para o primeiro item
+            spinnerUnKg.setSelection(0) // Resetando o Spinner de unidades para o primeiro item
+        }
+
+        // Configuração do botão de cancelar
+        findViewById<MaterialButton>(R.id.btnCancelar).setOnClickListener {
+            // Ao clicar em "Cancelar", volta para a tela anterior
+            onBackPressed()
         }
     }
 }

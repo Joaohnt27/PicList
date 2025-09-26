@@ -1,5 +1,6 @@
 package com.example.listacompras
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,12 +40,21 @@ class ListasAdapter(
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = itens[position]
         holder.titulo.text = item.titulo
+
+        // Verifica se há uma imagem URI e carrega a imagem, se não, carrega a imagem padrão
         if (item.imageUri != null) {
             holder.img.setImageURI(android.net.Uri.parse(item.imageUri))
         } else {
             holder.img.setImageResource(item.imageRes)
         }
-        holder.itemView.setOnClickListener { onClick(item) }
+
+        // Configura o clique para abrir a tela de detalhes da lista (AddItemActivity)
+        holder.itemView.setOnClickListener {
+            // Cria um Intent para abrir a AddItemActivity
+            val intent = Intent(holder.itemView.context, AddItemListaActivity::class.java)
+            intent.putExtra("nome_lista", item.titulo)  // Passa o nome da lista para a nova Activity
+            holder.itemView.context.startActivity(intent)
+        }
     }
 
     class VH(v: View) : RecyclerView.ViewHolder(v) {
