@@ -9,4 +9,7 @@ object ListMemory {
     fun set(email: String, items: List<Lista>) {
         data[email] = items.toMutableList()
     }
+    fun getByName(email: String, nome: String): Lista? {
+        return data[email]?.find { it.titulo == nome }
+    }
 }

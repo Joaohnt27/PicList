@@ -29,7 +29,7 @@ class AddItemActivity : AppCompatActivity() {
 
         // Configuração do Spinner de categorias
         val spinnerCategoria = findViewById<Spinner>(R.id.spinnerCategoria)
-        val categorias = arrayOf("Frutas", "Vegetais", "Laticínios", "Carnes", "Grãos") // Categorias predefinidas
+        val categorias = arrayOf("Hortifrúti", "Padaria e Confeitaria", "Açougue e Peixaria", "Frios e Laticínios", "Congelados", "Mercearia Seca", "Doces e Snacks", "Bebidas", "Infantil", "Pet Shop", "Limpeza", "Higiene Pessoal e Beleza", "Saúde e Farmácia", "Utilidades Domésticas e Outros") // Categorias predefinidas
 
         val adapterCategoria = ArrayAdapter(
             this,
@@ -40,14 +40,14 @@ class AddItemActivity : AppCompatActivity() {
         }
         spinnerCategoria.adapter = adapterCategoria // Atribui o adapter ao Spinner de categorias
 
-        // Configuração do botão de salvar
+        // Botão de salvar
         findViewById<MaterialButton>(R.id.btnSalvar).setOnClickListener {
             val nome = findViewById<TextInputEditText>(R.id.etNome).text?.toString()?.trim().orEmpty()
             val quantidade = findViewById<TextInputEditText>(R.id.etQuantidade).text?.toString()?.toIntOrNull()
             val unidade = spinnerUnKg.selectedItem.toString()
             val categoria = spinnerCategoria.selectedItem.toString()
 
-            // Validação: Verificar se o nome e a quantidade são válidos
+            // Verifica se o nome e a qtd são válidos
             if (nome.isEmpty() || quantidade == null) {
                 // Caso os dados sejam inválidos, exibe um aviso e não salva
                 return@setOnClickListener

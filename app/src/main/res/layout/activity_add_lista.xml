@@ -72,7 +72,7 @@
         style="@style/Widget.MaterialComponents.Button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Adicionar"
+        android:text="Salvar"
         android:layout_marginTop="20dp"
         app:backgroundTint="@color/green"
         android:textAllCaps="false"

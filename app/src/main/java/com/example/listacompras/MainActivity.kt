@@ -1,5 +1,6 @@
 package com.example.listacompras
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -53,7 +54,6 @@ class MainActivity : AppCompatActivity() {
         }
         rv.adapter = adapter
 
-        // TESTANDO !!
         findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
             addListaLauncher.launch(Intent(this, AddListaActivity::class.java))
         }
@@ -87,6 +87,24 @@ class MainActivity : AppCompatActivity() {
             // Adicionando a lista e salvando em memória
             adapter.addItem(Lista(titulo = titulo, imageUri = uri))
             persistirDados()  // Garante o salvamento das listas em memória
+        }
+    }
+
+    private val editarListaLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data ?: return@registerForActivityResult
+            val novoNome = data.getStringExtra("titulo") ?: return@registerForActivityResult
+            val nomeAntigo = data.getStringExtra("nome_antigo")
+            val editar = data.getBooleanExtra("editar", false)
+
+            if (editar && nomeAntigo != null) {
+                val lista = ListMemory.getByName(email, nomeAntigo)
+                lista?.titulo = novoNome
+                adapter.notifyDataSetChanged()
+                persistirDados()
+            }
         }
     }
 }

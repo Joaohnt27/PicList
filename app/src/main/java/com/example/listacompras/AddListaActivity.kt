@@ -4,13 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.textfield.TextInputEditText
 import android.widget.ImageView
 import android.widget.Toast
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
 
 class AddListaActivity : AppCompatActivity() {
 
@@ -29,28 +29,48 @@ class AddListaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_lista)
 
+        val etNome = findViewById<TextInputEditText>(R.id.etNome)
+        // Recebe o nome da lista atual, se houver permite edição
+        val nomeAtual = intent.getStringExtra("nome_lista")
+        if (!nomeAtual.isNullOrEmpty()) {
+            etNome.setText(nomeAtual)
+        }
+
         findViewById<FloatingActionButton>(R.id.fabPick).setOnClickListener {
             pickImage.launch("image/*")
         }
 
+        // Botão salvar (criação ou edição)
         findViewById<MaterialButton>(R.id.btnSalvar).setOnClickListener {
-            val nome = findViewById<TextInputEditText>(R.id.etNome).text?.toString()?.trim().orEmpty()
-            if (nome.isEmpty()) {
-                findViewById<TextInputEditText>(R.id.etNome).error = "Informe o nome"
+            val novoNome = etNome.text?.toString()?.trim().orEmpty()
+            if (novoNome.isEmpty()) {
+                etNome.error = "Informe o nome"
                 return@setOnClickListener
             }
-            // Envia os daados para a MainActivity
+
             val data = Intent().apply {
-                putExtra("titulo", nome)
+                putExtra("titulo", novoNome)
                 putExtra("imageUri", imageUri?.toString())
+                putExtra("editar", !nomeAtual.isNullOrEmpty()) // indica se é edição
+                putExtra("nome_antigo", nomeAtual) // para atualizar memória se for edição
             }
-            Toast.makeText(this, "Nova lista criada! ;)", Toast.LENGTH_SHORT).show()
+
+            Toast.makeText(
+                this,
+                if (nomeAtual != null) "Lista atualizada, jovem! ;)" else "Nova lista criada! ;)",
+                Toast.LENGTH_SHORT
+            ).show()
+
             setResult(Activity.RESULT_OK, data)
             finish()
         }
 
+        // Botão cancelar
         findViewById<MaterialButton>(R.id.btnCancelar).setOnClickListener {
-            Toast.makeText(this, "Criação de lista cancelada.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                if (nomeAtual != null) "Atualização de lista cancelada, jovem. :(" else "Criação de lista cancelada, jovem. :(",
+                Toast.LENGTH_SHORT).show()
             setResult(Activity.RESULT_CANCELED)
             finish()
         }
