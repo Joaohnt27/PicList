@@ -1,6 +1,6 @@
 package com.example.listacompras
 
-import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +10,15 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ListasAdapter(
     private var itens: MutableList<Lista>,
-    private val onClick: (Lista) -> Unit
+    private val onClick: (Lista) -> Unit,
+    private val onEdit: ((Lista) -> Unit)? = null // segurar para editar
 ) : RecyclerView.Adapter<ListasAdapter.VH>() {
 
+    // Fonte da verdade para filtros/persistência
     private var full: MutableList<Lista> = itens.toMutableList()
 
-    fun currentItems(): List<Lista> = itens
+    /** Use esta para persistir (sempre retorna TODAS as listas) */
+    fun currentItems(): List<Lista> = full
 
     fun filter(query: String) {
         val q = query.trim().lowercase()
@@ -26,7 +29,34 @@ class ListasAdapter(
 
     fun addItem(item: Lista) {
         full.add(0, item)
-        filter("") // reseta lista exibida
+        filter("") // reseta exibição
+    }
+
+    /** Renomeia em full e na lista visível; atualiza só a célula quando possível */
+    fun renameByTitle(oldTitle: String, newTitle: String, newImageUri: String? = null) {
+        // atualiza em full
+        val idxFull = full.indexOfFirst { it.titulo == oldTitle }
+        if (idxFull >= 0) {
+            val antigo = full[idxFull]
+            full[idxFull] = antigo.copy(
+                titulo = newTitle,
+                imageUri = newImageUri ?: antigo.imageUri
+            )
+        }
+
+        // atualiza na lista exibida
+        val idxShown = itens.indexOfFirst { it.titulo == oldTitle }
+        if (idxShown >= 0) {
+            val antigo = itens[idxShown]
+            itens[idxShown] = antigo.copy(
+                titulo = newTitle,
+                imageUri = newImageUri ?: antigo.imageUri
+            )
+            notifyItemChanged(idxShown)
+        } else {
+            // se estiver filtrado e o item não aparecer, sincroniza a UI
+            notifyDataSetChanged()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -41,19 +71,16 @@ class ListasAdapter(
         val item = itens[position]
         holder.titulo.text = item.titulo
 
-        // Verifica se há uma imagem URI e carrega a imagem, se não, carrega a imagem padrão
         if (item.imageUri != null) {
-            holder.img.setImageURI(android.net.Uri.parse(item.imageUri))
+            holder.img.setImageURI(Uri.parse(item.imageUri))
         } else {
             holder.img.setImageResource(item.imageRes)
         }
 
-        // Configura o clique para abrir a tela de detalhes da lista (AddItemActivity)
-        holder.itemView.setOnClickListener {
-            // Cria um Intent para abrir a AddItemActivity
-            val intent = Intent(holder.itemView.context, AddItemListaActivity::class.java)
-            intent.putExtra("nome_lista", item.titulo)  // Passa o nome da lista para a nova Activity
-            holder.itemView.context.startActivity(intent)
+        holder.itemView.setOnClickListener { onClick(item) }
+        holder.itemView.setOnLongClickListener {
+            onEdit?.invoke(item)
+            onEdit != null
         }
     }
 

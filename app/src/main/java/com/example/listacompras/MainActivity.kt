@@ -19,6 +19,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: ListasAdapter
     private lateinit var email: String
 
+    // TESTANDO!!!!!!
+    override fun onResume() {
+        super.onResume()
+        adapter.filter("") // re-sincroniza a exibição com 'full'
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnLogout) // -> TESTANDO!!!
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnLogout)
             .setOnClickListener {
                 MaterialAlertDialogBuilder(this)
                     .setTitle("Sair da conta?")
@@ -48,10 +54,13 @@ class MainActivity : AppCompatActivity() {
         rv.addItemDecoration(EspacamentoItens(12))
 
         adapter = ListasAdapter(
-            ListMemory.get(email).toMutableList()
-        ) { item ->
-            Toast.makeText(this, "Abrindo lista: ${item.titulo}", Toast.LENGTH_SHORT).show()
-        }
+            ListMemory.get(email).toMutableList(),
+            onClick = { item ->
+                val intent = Intent(this, AddItemListaActivity::class.java)
+                intent.putExtra("nome_lista", item.titulo)
+                startActivity(intent)
+            },
+        )
         rv.adapter = adapter
 
         findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
@@ -66,11 +75,6 @@ class MainActivity : AppCompatActivity() {
                 adapter.filter(s?.toString() ?: "")
             }
         })
-
-        findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fabAdd)
-            .setOnClickListener {
-                addListaLauncher.launch(Intent(this, AddListaActivity::class.java))
-            }
     }
 
     private fun persistirDados() {
@@ -96,13 +100,16 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             val data = result.data ?: return@registerForActivityResult
             val novoNome = data.getStringExtra("titulo") ?: return@registerForActivityResult
-            val nomeAntigo = data.getStringExtra("nome_antigo")
+            val nomeAntigo = data.getStringExtra("nome_antigo") ?: return@registerForActivityResult
             val editar = data.getBooleanExtra("editar", false)
+            val novaUri = data.getStringExtra("imageUri")
 
-            if (editar && nomeAntigo != null) {
-                val lista = ListMemory.getByName(email, nomeAntigo)
-                lista?.titulo = novoNome
-                adapter.notifyDataSetChanged()
+            Toast.makeText(this, "Renomeando: $nomeAntigo -> $novoNome", Toast.LENGTH_SHORT).show()
+
+            if (editar) {
+                // Atualiza o adapter imediatamente
+                adapter.renameByTitle(nomeAntigo, novoNome, novaUri)
+                ListMemory.rename(email, nomeAntigo, novoNome)
                 persistirDados()
             }
         }

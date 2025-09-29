@@ -12,4 +12,8 @@ object ListMemory {
     fun getByName(email: String, nome: String): Lista? {
         return data[email]?.find { it.titulo == nome }
     }
+    fun rename(email: String, antigo: String, novo: String) {
+        val lista = getByName(email, antigo) ?: return
+        lista.titulo = novo
+    }
 }
