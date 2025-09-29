@@ -2,6 +2,7 @@ package com.example.listacompras
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -32,8 +33,9 @@ class AddItemListaActivity : AppCompatActivity() {
                 lista?.titulo = novoNome
                 itemAtual = lista!!
 
-                // Atualiza título na tela
+                // Atualiza título nas telas
                 findViewById<MaterialButton>(R.id.btnEditar).text = novoNome
+                findViewById<TextView>(R.id.tvTitulo).text = novoNome
             }
 
             adapter.notifyDataSetChanged()
@@ -47,6 +49,9 @@ class AddItemListaActivity : AppCompatActivity() {
         email = Session.userEmail ?: return
         val nomeLista = intent.getStringExtra("nome_lista") ?: ""
         itemAtual = ListMemory.getByName(email, nomeLista) ?: Lista(nomeLista)
+
+        val tvTitulo = findViewById<TextView>(R.id.tvTitulo)
+        tvTitulo.text = itemAtual.titulo
 
         rvItens = findViewById(R.id.rvListas)
         rvItens.layoutManager = GridLayoutManager(this, 2)

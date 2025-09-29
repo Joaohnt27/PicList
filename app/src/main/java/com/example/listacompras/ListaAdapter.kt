@@ -14,10 +14,9 @@ class ListasAdapter(
     private val onEdit: ((Lista) -> Unit)? = null // segurar para editar
 ) : RecyclerView.Adapter<ListasAdapter.VH>() {
 
-    // Fonte da verdade para filtros/persistência
     private var full: MutableList<Lista> = itens.toMutableList()
 
-    /** Use esta para persistir (sempre retorna TODAS as listas) */
+    // Sempre retorna todas as listas
     fun currentItems(): List<Lista> = full
 
     fun filter(query: String) {
@@ -32,7 +31,7 @@ class ListasAdapter(
         filter("") // reseta exibição
     }
 
-    /** Renomeia em full e na lista visível; atualiza só a célula quando possível */
+    // Renomeia em full e na lista visível; atualiza só a célula quando possível
     fun renameByTitle(oldTitle: String, newTitle: String, newImageUri: String? = null) {
         // atualiza em full
         val idxFull = full.indexOfFirst { it.titulo == oldTitle }
@@ -44,7 +43,7 @@ class ListasAdapter(
             )
         }
 
-        // atualiza na lista exibida
+        // atualizaa na lista exibida
         val idxShown = itens.indexOfFirst { it.titulo == oldTitle }
         if (idxShown >= 0) {
             val antigo = itens[idxShown]

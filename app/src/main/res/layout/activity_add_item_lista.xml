@@ -55,7 +55,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etBusca"
             android:layout_width="match_parent"
-            android:layout_height="54dp"
+            android:layout_height="38dp"
             android:hint="Buscar" />
     </com.google.android.material.textfield.TextInputLayout>
 
