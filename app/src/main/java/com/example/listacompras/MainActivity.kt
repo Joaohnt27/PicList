@@ -53,13 +53,14 @@ class MainActivity : AppCompatActivity() {
         rv.layoutManager = GridLayoutManager(this, 2)
         rv.addItemDecoration(EspacamentoItens(12))
 
+        val listasOrdenadas = ListMemory.get(email).sortedBy { it.titulo.lowercase() } // ordem alfabéitca
         adapter = ListasAdapter(
-            ListMemory.get(email).toMutableList(),
+            listasOrdenadas.toMutableList(),
             onClick = { item ->
                 val intent = Intent(this, AddItemListaActivity::class.java)
                 intent.putExtra("nome_lista", item.titulo)
                 startActivity(intent)
-            },
+            }
         )
         rv.adapter = adapter
 
@@ -109,6 +110,9 @@ class MainActivity : AppCompatActivity() {
             if (editar) {
                 // Atualiza o adapter imediatamente
                 adapter.renameByTitle(nomeAntigo, novoNome, novaUri)
+
+                val ordenadas = adapter.currentItems().sortedBy { it.titulo.lowercase() }
+                adapter.setItems(ordenadas)
                 ListMemory.rename(email, nomeAntigo, novoNome)
                 persistirDados()
             }

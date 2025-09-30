@@ -28,7 +28,14 @@ class ListasAdapter(
 
     fun addItem(item: Lista) {
         full.add(0, item)
+        full.sortBy { it.titulo.lowercase() }
         filter("") // reseta exibição
+    }
+
+    fun setItems(novas: List<Lista>) {
+        full.clear()
+        full.addAll(novas)
+        filter("")
     }
 
     // Renomeia em full e na lista visível; atualiza só a célula quando possível
