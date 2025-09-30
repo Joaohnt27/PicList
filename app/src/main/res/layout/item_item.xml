@@ -1,20 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:layout_height="72dp"
+    android:layout_marginBottom="8dp"
+    app:cardUseCompatPadding="false"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp">
 
-    <TextView
-        android:id="@+id/tvNomeItem"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:text="Nome do Item"
-        android:textSize="16sp"
-        android:textColor="@android:color/black"
-        android:textStyle="bold"/>
-</androidx.cardview.widget.CardView>
+        android:layout_height="match_parent"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
+
+        <!-- Ícone -->
+        <FrameLayout
+            android:id="@+id/iconContainer"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@color/gray"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/imgCategoria"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                app:tint="@color/green"
+                android:contentDescription="@string/app_name" />
+        </FrameLayout>
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tvNomeItem"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Nome do item"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/iconContainer"
+            app:layout_constraintTop_toTopOf="@id/iconContainer"
+            app:layout_constraintEnd_toStartOf="@id/cb"
+            android:layout_marginStart="12dp"/>
+
+        <!-- Subtítulo: quantidade + unidade -->
+        <TextView
+            android:id="@+id/tvDetalhe"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="69 unidades"
+            android:textSize="13sp"
+            android:textColor="@color/gray"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="@id/tvNomeItem"
+            app:layout_constraintTop_toBottomOf="@id/tvNomeItem"
+            app:layout_constraintEnd_toStartOf="@id/cb"/>
+
+        <!-- Checkbox -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cb"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            app:buttonIconTint="@color/green"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -17,6 +17,29 @@ class AddItemListaActivity : AppCompatActivity() {
     private lateinit var itemAtual: Lista
     private lateinit var rvItens: RecyclerView
 
+    private val addItemLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        android.util.Log.d("ITENS", "launcher code=${result.resultCode}")
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data ?: return@registerForActivityResult
+            val nome = data.getStringExtra("nome") ?: return@registerForActivityResult
+            val quantidade = data.getIntExtra("quantidade", 1)
+            val unidade = data.getStringExtra("unidade") ?: "un"
+            val categoria = data.getStringExtra("categoria") ?: "Utilidades Domésticas e Outros"
+
+            val novo = Item(nome, quantidade, unidade, categoria, false)
+
+            val pos = itemAtual.itens.size
+            itemAtual.itens.add(novo)
+            adapter.notifyItemInserted(pos)
+            rvItens.scrollToPosition(pos)
+
+            android.widget.Toast.makeText(this, "Item adicionado: $nome", android.widget.Toast.LENGTH_SHORT).show()
+            android.util.Log.d("ITENS", "inserido pos=$pos total=${itemAtual.itens.size}")
+        }
+    }
+
     // Launcher para editar lista
     private val editarListaLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -37,7 +60,6 @@ class AddItemListaActivity : AppCompatActivity() {
                 findViewById<MaterialButton>(R.id.btnEditar).text = novoNome
                 findViewById<TextView>(R.id.tvTitulo).text = novoNome
             }
-
             adapter.notifyDataSetChanged()
         }
     }
@@ -54,14 +76,14 @@ class AddItemListaActivity : AppCompatActivity() {
         tvTitulo.text = itemAtual.titulo
 
         rvItens = findViewById(R.id.rvListas)
-        rvItens.layoutManager = GridLayoutManager(this, 2)
+        rvItens.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         adapter = ItensAdapter(itemAtual.itens) { /* clique no item */ }
         rvItens.adapter = adapter
 
         // Botão adicionar item
         findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
             val intent = Intent(this, AddItemActivity::class.java)
-            startActivity(intent)
+            addItemLauncher.launch(intent)
         }
 
         // Botão editar lista

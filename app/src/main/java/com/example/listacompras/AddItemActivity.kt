@@ -1,5 +1,6 @@
 package com.example.listacompras
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Spinner
@@ -44,26 +45,30 @@ class AddItemActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnSalvar).setOnClickListener {
             val nome = findViewById<TextInputEditText>(R.id.etNome).text?.toString()?.trim().orEmpty()
             val quantidade = findViewById<TextInputEditText>(R.id.etQuantidade).text?.toString()?.toIntOrNull()
-            val unidade = spinnerUnKg.selectedItem.toString()
-            val categoria = spinnerCategoria.selectedItem.toString()
+            val unidade = spinnerUnKg.selectedItem?.toString() ?: "un"
+            val categoria = spinnerCategoria.selectedItem?.toString() ?: "Utilidades Domésticas e Outros"
 
-            // Verifica se o nome e a qtd são válidos
             if (nome.isEmpty() || quantidade == null) {
-                // Caso os dados sejam inválidos, exibe um aviso e não salva
+                android.widget.Toast.makeText(this, "Jovem, preencha os campos de nome e quantidade!", android.widget.Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Cria o item e salva em memória
-            val item = Item(nome, quantidade, unidade, categoria)
-            ItensMemory.itens.add(item)  // Adiciona o item à lista de itens na memória
+            // Para ver se está salvando o item
+            android.widget.Toast.makeText(
+                this,
+                "Item salvo: $nome | $quantidade $unidade | $categoria",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
 
-            // Limpar os campos para adicionar outro item
-            findViewById<TextInputEditText>(R.id.etNome).text?.clear()
-            findViewById<TextInputEditText>(R.id.etQuantidade).text?.clear()
-            spinnerCategoria.setSelection(0) // Resetando o Spinner de categorias para o primeiro item
-            spinnerUnKg.setSelection(0) // Resetando o Spinner de unidades para o primeiro item
+            val data = Intent().apply {
+                putExtra("nome", nome)
+                putExtra("quantidade", quantidade)
+                putExtra("unidade", unidade)
+                putExtra("categoria", categoria)
+            }
+            setResult(RESULT_OK, data)
+            finish()
         }
-
         // Configuração do botão de cancelar
         findViewById<MaterialButton>(R.id.btnCancelar).setOnClickListener {
             // Ao clicar em "Cancelar", volta para a tela anterior
