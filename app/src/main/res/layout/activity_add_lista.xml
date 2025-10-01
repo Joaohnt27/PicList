@@ -52,7 +52,7 @@
             android:layout_height="match_parent"
             android:scaleType="centerInside"
             android:background="#F1EDF5"
-            android:src="@android:drawable/ic_menu_gallery"/>
+            android:src="@drawable/placeholderimg"/>
     </com.google.android.material.card.MaterialCardView>
 
     <!-- FAB de câmera/galeria -->

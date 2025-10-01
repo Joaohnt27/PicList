@@ -80,7 +80,7 @@ class ListasAdapter(
         if (item.imageUri != null) {
             holder.img.setImageURI(Uri.parse(item.imageUri))
         } else {
-            holder.img.setImageResource(item.imageRes)
+            holder.img.setImageResource(R.drawable.placeholderimg)
         }
 
         holder.itemView.setOnClickListener { onClick(item) }
