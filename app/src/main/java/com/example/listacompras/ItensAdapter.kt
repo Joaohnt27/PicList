@@ -41,13 +41,52 @@ class ItensAdapter(
 
         holder.cb.setOnCheckedChangeListener { _, checked ->
             item.marcado = checked
-            applyCheckedStyle(holder, checked)
+            if (checked) {
+                // Se estiver marcado, move o item para o final da lista
+                moverItemFimLista(position)
+                applyCheckedStyle(holder, checked)
+            } else {
+                val itemDesmarcado = itens[position]
+                itens.removeAt(position)
+                itens.add(position, itemDesmarcado)
+                notifyItemMoved(position, itens.indexOf(itemDesmarcado))
+                applyCheckedStyle(holder, checked)
+            }
         }
 
         holder.itemView.setOnClickListener {
             holder.cb.isChecked = !holder.cb.isChecked
             onClick(item)
         }
+    }
+    private fun moverItemFimLista(position: Int) {
+        val item = itens[position]
+        // Remove o item da posição atual
+        itens.removeAt(position)
+        // Adiciona o item ao final
+        itens.add(item)
+
+        // Filtra os itens marcados e não marcados
+        val checkedItems = itens.filter { it.marcado } // Itens marcados
+        val uncheckedItems = itens.filterNot { it.marcado } // Itens não marcados
+
+        // Agrupar os itens marcados por categoria
+        val groupedByCategory = checkedItems.groupBy { it.categoria }
+
+        // Ordena as categorias dentro dos itens marcados
+        val sortedGroupedItems = groupedByCategory.flatMap { entry ->
+            entry.value.sortedBy { it.nome } // Ordena os itens dentro de cada categoria
+        }
+
+        // Recria a lista final com os itens não marcados primeiro, seguidos dos itens marcados organizados por categoria
+        val newList = uncheckedItems + sortedGroupedItems
+
+        // Atualiza a lista original
+        itens.clear()
+        itens.addAll(newList)
+
+        // Notifica o RecyclerView da mudança
+        notifyDataSetChanged() // Atualiza a lista
     }
 
     private fun applyCheckedStyle(holder: VH, checked: Boolean) {
@@ -60,7 +99,6 @@ class ItensAdapter(
         }
     }
 
-    // TESTANDO!!!!
     fun removeAt(position: Int) {
         itens.removeAt(position)
         notifyItemRemoved(position)

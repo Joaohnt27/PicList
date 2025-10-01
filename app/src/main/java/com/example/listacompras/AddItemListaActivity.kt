@@ -34,16 +34,37 @@ class AddItemListaActivity : AppCompatActivity() {
     private val ordemCategorias = listOf("Hortifrúti", "Padaria e Confeitaria", "Açougue e Peixaria", "Frios e Laticínios", "Congelados", "Mercearia Seca", "Doces e Snacks", "Bebidas", "Infantil", "Pet Shop", "Limpeza", "Higiene Pessoal e Beleza", "Saúde e Farmácia", "Utilidades Domésticas e Outros")
 
     private fun ordenarItens(notify: Boolean = true) {
-        itemAtual.itens.sortWith(Comparator { a, b ->
+        // Filtra os itens marcados e não marcados
+        val checkedItems = itemAtual.itens.filter { it.marcado }
+        val uncheckedItems = itemAtual.itens.filterNot { it.marcado }
+
+        // Ordena os itens não marcados por categoria (de acordo com ordemCategorias) e nome
+        val sortedUncheckedItems = uncheckedItems.sortedWith(Comparator { a, b ->
             val idxA = ordemCategorias.indexOf(a.categoria).let { if (it >= 0) it else Int.MAX_VALUE }
             val idxB = ordemCategorias.indexOf(b.categoria).let { if (it >= 0) it else Int.MAX_VALUE }
-            val cat = idxA.compareTo(idxB)
+            val catComparison = idxA.compareTo(idxB) // Compara as categorias pela ordem em ordemCategorias
 
-            if (cat != 0) cat
-            else {
-                collator.compare(a.nome, b.nome)
-            }
+            if (catComparison != 0) catComparison
+            else collator.compare(a.nome, b.nome) // Ordena por nome dentro da categoria
         })
+
+        // Ordena os itens marcados da mesma forma
+        val sortedCheckedItems = checkedItems.sortedWith(Comparator { a, b ->
+            val idxA = ordemCategorias.indexOf(a.categoria).let { if (it >= 0) it else Int.MAX_VALUE }
+            val idxB = ordemCategorias.indexOf(b.categoria).let { if (it >= 0) it else Int.MAX_VALUE }
+            val catComparison = idxA.compareTo(idxB) // Compara as categorias pela ordem em ordemCategorias
+
+            if (catComparison != 0) catComparison
+            else collator.compare(a.nome, b.nome) // Ordena por nome dentro da categoria
+        })
+
+        // Recria a lista final, com os itens não marcados primeiro, seguidos pelos itens marcados
+        val newList = sortedUncheckedItems + sortedCheckedItems
+
+        // Atualiza a lista original
+        itemAtual.itens.clear()
+        itemAtual.itens.addAll(newList)
+
         if (notify) adapter.notifyDataSetChanged()
     }
 
