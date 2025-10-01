@@ -8,33 +8,36 @@
     android:padding="16dp">
 
     <!-- Voltar -->
+
+    <!-- Editar -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnVoltar"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginTop="12dp"
         android:contentDescription="Voltar"
+        app:backgroundTint="@color/gray"
         app:icon="@drawable/outline_arrow_back_24"
         app:iconTint="@color/green"
-        app:backgroundTint="@color/gray"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Editar -->
+    <!-- Buscar -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnEditar"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginTop="12dp"
         android:contentDescription="@string/app_name"
         app:backgroundTint="@color/gray"
         app:cornerRadius="24dp"
         app:icon="@drawable/edit_24px"
         app:iconTint="@color/green"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Buscar -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilBusca"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -55,7 +58,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etBusca"
             android:layout_width="match_parent"
-            android:layout_height="38dp"
+            android:layout_height="53dp"
             android:hint="Buscar" />
     </com.google.android.material.textfield.TextInputLayout>
 

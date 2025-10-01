@@ -60,6 +60,13 @@ class ItensAdapter(
         }
     }
 
+    // TESTANDO!!!!
+    fun removeAt(position: Int) {
+        itens.removeAt(position)
+        notifyItemRemoved(position)
+    }
+    fun getItemAt(position: Int): Item = itens[position]
+
     class VH(v: View) : RecyclerView.ViewHolder(v) {
         val card: MaterialCardView = v as MaterialCardView
         val imgCategoria: ImageView = v.findViewById(R.id.imgCategoria)
