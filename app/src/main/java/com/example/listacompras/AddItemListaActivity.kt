@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import java.text.Collator
+import java.util.Locale
 
 class AddItemListaActivity : AppCompatActivity() {
 
@@ -22,6 +24,28 @@ class AddItemListaActivity : AppCompatActivity() {
     private lateinit var adapter: ItensAdapter
     private lateinit var itemAtual: Lista
     private lateinit var rvItens: RecyclerView
+
+    // Função para comparar strings sem considerar acentos e case
+    private val collator: Collator = Collator.getInstance(Locale("pt", "BR")).apply {
+        strength = Collator.PRIMARY
+    }
+
+    // Função para ordenar categorias conforme a lista predefinida
+    private val ordemCategorias = listOf("Hortifrúti", "Padaria e Confeitaria", "Açougue e Peixaria", "Frios e Laticínios", "Congelados", "Mercearia Seca", "Doces e Snacks", "Bebidas", "Infantil", "Pet Shop", "Limpeza", "Higiene Pessoal e Beleza", "Saúde e Farmácia", "Utilidades Domésticas e Outros")
+
+    private fun ordenarItens(notify: Boolean = true) {
+        itemAtual.itens.sortWith(Comparator { a, b ->
+            val idxA = ordemCategorias.indexOf(a.categoria).let { if (it >= 0) it else Int.MAX_VALUE }
+            val idxB = ordemCategorias.indexOf(b.categoria).let { if (it >= 0) it else Int.MAX_VALUE }
+            val cat = idxA.compareTo(idxB)
+
+            if (cat != 0) cat
+            else {
+                collator.compare(a.nome, b.nome)
+            }
+        })
+        if (notify) adapter.notifyDataSetChanged()
+    }
 
     private val addItemLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -42,7 +66,11 @@ class AddItemListaActivity : AppCompatActivity() {
             rvItens.scrollToPosition(pos)
 
             android.widget.Toast.makeText(this, "Item adicionado: $nome", android.widget.Toast.LENGTH_SHORT).show()
-            android.util.Log.d("ITENS", "inserido pos=$pos total=${itemAtual.itens.size}")
+
+            // Ela reordena a lista e atualiza o adapter
+            ordenarItens()
+            val newIndex = itemAtual.itens.indexOf(novo)
+            if (newIndex >= 0) rvItens.scrollToPosition(newIndex)
         }
     }
 
@@ -77,6 +105,8 @@ class AddItemListaActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.tvTitulo).text = itemAtual.titulo
 
+        // ordena antes de renderizar
+        ordenarItens(notify = false)
         rvItens = findViewById(R.id.rvListas)
         rvItens.layoutManager = LinearLayoutManager(this)
         adapter = ItensAdapter(itemAtual.itens) { /* clique no item */ }
@@ -84,7 +114,7 @@ class AddItemListaActivity : AppCompatActivity() {
 
         // Arrastar paraa deletar (Swipe-to-delete) - TESTANDO !!!
         val swipeToDelete = object : ItemTouchHelper.SimpleCallback(
-            0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            0,  ItemTouchHelper.LEFT
         ) {
             override fun onMove(
                 rv: RecyclerView, vh: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder
@@ -99,9 +129,10 @@ class AddItemListaActivity : AppCompatActivity() {
                 // Snackbar para desfazer
                 Snackbar.make(rvItens, "Item removido da lista", Snackbar.LENGTH_LONG)
                     .setAction("Desfazer") {
-                        itemAtual.itens.add(pos, removido)
-                        adapter.notifyItemInserted(pos)
-                        rvItens.scrollToPosition(pos)
+                        itemAtual.itens.add(removido) // Adiciona o item de volta
+                        ordenarItens()                // Reordena e atualiza tudo
+                        val idx = itemAtual.itens.indexOf(removido)
+                        if (idx >= 0) rvItens.scrollToPosition(idx)
                     }.show()
             }
             // Quando arrastar, cria o fundo vermelho e aparece o ícone da lixira
@@ -121,15 +152,10 @@ class AddItemListaActivity : AppCompatActivity() {
                 val icon = ContextCompat.getDrawable(rv.context, R.drawable.delete_forever_24dp_e3e3e3_fill0_wght400_grad0_opsz24)
 
                 // Fundo
-                if (dX > 0) { // direita
+                if (dX < 0) {
                     c.drawRect(
-                        itemView.left.toFloat(), itemView.top.toFloat(),
-                        itemView.left + dX, itemView.bottom.toFloat(), paint
-                    )
-                } else if (dX < 0) { // esquerda
-                    c.drawRect(
-                        itemView.right + dX, itemView.top.toFloat(),
-                        itemView.right.toFloat(), itemView.bottom.toFloat(), paint
+                        itemView.right.toFloat(), itemView.top.toFloat(),
+                        itemView.right + dX, itemView.bottom.toFloat(), paint
                     )
                 }
 
@@ -163,7 +189,6 @@ class AddItemListaActivity : AppCompatActivity() {
             intent.putExtra("nome_lista", itemAtual.titulo)
             editarListaLauncher.launch(intent)
         }
-
         findViewById<MaterialButton>(R.id.btnVoltar).setOnClickListener { finish() }
     }
 }
