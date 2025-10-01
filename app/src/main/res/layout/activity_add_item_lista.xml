@@ -98,4 +98,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"/>
+
+    <!-- Botão de apagar lista -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabDel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="80dp"
+        android:contentDescription="@string/app_name"
+        app:backgroundTint="@color/red"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/delete_forever_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        app:tint="@android:color/white" />
 </androidx.constraintlayout.widget.ConstraintLayout>

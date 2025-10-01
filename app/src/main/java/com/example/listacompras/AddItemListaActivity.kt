@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import java.text.Collator
@@ -95,6 +96,15 @@ class AddItemListaActivity : AppCompatActivity() {
         }
     }
 
+    // TESTANDO
+    private val deleteListaLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val intent = Intent()
+            setResult(RESULT_OK, intent) // Envia um resultado de sucesso
+            finish() // Finaliza e retorna para a pág. anterior
+        }
+    }
+
     private val editarListaLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -114,6 +124,16 @@ class AddItemListaActivity : AppCompatActivity() {
             }
             adapter.notifyDataSetChanged()
         }
+    }
+
+    // Func p/ excluir a lista
+    private fun excluirLista() {
+        ListMemory.remove(email, itemAtual.titulo)
+
+        // Retorna para a MainActivity com um resultado indicando que a lista foi excluída
+        val intent = Intent()
+        setResult(RESULT_OK, intent) // Passando o resultado de sucesso caso ela tenha sido excluida com sucesso
+        finish() // Finaliza e volta p/ MainActivity
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -211,5 +231,17 @@ class AddItemListaActivity : AppCompatActivity() {
             editarListaLauncher.launch(intent)
         }
         findViewById<MaterialButton>(R.id.btnVoltar).setOnClickListener { finish() }
+
+        findViewById<FloatingActionButton>(R.id.fabDel).setOnClickListener {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Excluir a lista?")
+                .setMessage("Você realmente deseja excluir a lista inteira, jovem?")
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Excluir") { _, _ ->
+                    // Exclui a lista se confirmado
+                    excluirLista()  // Método para excluir a lista
+                }
+                .show()
+        }
     }
 }

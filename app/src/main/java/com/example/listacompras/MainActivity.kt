@@ -22,7 +22,9 @@ class MainActivity : AppCompatActivity() {
     // TESTANDO!!!!!!
     override fun onResume() {
         super.onResume()
-        adapter.filter("") // re-sincroniza a exibição com 'full'
+        val listasOrdenadas = ListMemory.get(email).sortedBy { it.titulo.lowercase() }
+        adapter.setItems(listasOrdenadas.toMutableList()) // Atualiza o adapter com as listas mais recentes
+        adapter.notifyDataSetChanged() // Notifica o adapter que a lista foi alterada
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
