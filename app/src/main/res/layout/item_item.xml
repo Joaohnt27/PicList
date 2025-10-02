@@ -20,7 +20,7 @@
             android:id="@+id/iconContainer"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@color/gray"
+            android:background="@drawable/circle_shape"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -30,7 +30,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
-                app:tint="@color/green"
+                app:tint="@color/gray"
                 android:contentDescription="@string/app_name" />
         </FrameLayout>
 
@@ -68,7 +68,7 @@
             android:id="@+id/cb"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            app:buttonIconTint="@color/green"
+            app:buttonIconTint="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
