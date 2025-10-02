@@ -100,7 +100,6 @@ class AddItemListaActivity : AppCompatActivity() {
         }
     }
 
-    // TESTANDO
     private val deleteListaLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             val intent = Intent()
@@ -135,7 +134,6 @@ class AddItemListaActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private val editarListaLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()

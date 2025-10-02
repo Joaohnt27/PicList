@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -47,6 +48,7 @@ class ItensAdapter(
                 // Se estiver marcado, move o item para o final da lista
                 moverItemFimLista(position)
                 applyCheckedStyle(holder, checked)
+                Toast.makeText(holder.itemView.context, "Item riscado, jovem!", Toast.LENGTH_SHORT).show()
             } else {
                 val itemDesmarcado = itens[position]
                 itens.removeAt(position)
