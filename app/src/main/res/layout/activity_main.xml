@@ -26,7 +26,7 @@
             android:id="@+id/etBusca"
             android:layout_width="308dp"
             android:layout_height="wrap_content"
-            android:hint="Buscar" />
+            android:hint="Buscar lista" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Botão de logout -->
@@ -36,10 +36,9 @@
         android:layout_width="47dp"
         android:layout_height="52dp"
         android:contentDescription="@string/app_name"
-        app:backgroundTint="@color/gray"
-        app:cornerRadius="24dp"
+        app:backgroundTint="@color/green"
         app:icon="@drawable/baseline_logout_24"
-        app:iconTint="@color/green"
+        app:iconTint="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/tilBusca"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tilBusca" />

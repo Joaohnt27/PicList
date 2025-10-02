@@ -14,11 +14,10 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginTop="12dp"
-        app:cornerRadius="24dp"
         android:contentDescription="Voltar"
-        app:backgroundTint="@color/gray"
+        app:backgroundTint="@color/green"
         app:icon="@drawable/outline_arrow_back_24"
-        app:iconTint="@color/green"
+        app:iconTint="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,10 +29,9 @@
         android:layout_height="48dp"
         android:layout_marginTop="12dp"
         android:contentDescription="Menu"
-        app:backgroundTint="@color/gray"
-        app:cornerRadius="24dp"
-        app:icon="@drawable/menu_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
-        app:iconTint="@color/green"
+        app:backgroundTint="@color/green"
+        app:icon="@drawable/more_vert_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        app:iconTint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -59,7 +57,7 @@
             android:id="@+id/etBusca"
             android:layout_width="match_parent"
             android:layout_height="53dp"
-            android:hint="Buscar" />
+            android:hint="Buscar item" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Título -->
