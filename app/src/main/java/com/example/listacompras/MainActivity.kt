@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: ListasAdapter
     private lateinit var email: String
 
-    // TESTANDO!!!!!!
     override fun onResume() {
         super.onResume()
         val listasOrdenadas = ListMemory.get(email).sortedBy { it.titulo.lowercase() }
@@ -84,12 +83,29 @@ class MainActivity : AppCompatActivity() {
         ListMemory.set(email, adapter.currentItems())  // -> Salva a lista no ListMemory
     }
 
+    // Normaliza para comparar (sem acento e minúsculas)
+    private fun normalizarTxt(s: String): String {
+        val n = java.text.Normalizer.normalize(s.trim(), java.text.Normalizer.Form.NFD)
+        return n.replace("\\p{M}+".toRegex(), "").lowercase()
+    }
+
+    // Verifica se já existe lista com esse título
+    private fun tituloExiste(titulo: String): Boolean {
+        val alvo = normalizarTxt(titulo)
+        return ListMemory.get(email).any { normalizarTxt(it.titulo) == alvo }
+    }
+
     private val addListaLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             val titulo = result.data?.getStringExtra("titulo") ?: return@registerForActivityResult
             val uri = result.data?.getStringExtra("imageUri")
+
+            if (tituloExiste(titulo)) {
+                Toast.makeText(this, "Já existe uma lista com esse título, jovem!", Toast.LENGTH_SHORT).show()
+                return@registerForActivityResult
+            }
 
             // Adicionando a lista e salvando em memória
             adapter.addItem(Lista(titulo = titulo, imageUri = uri))
