@@ -106,6 +106,34 @@ class AddItemListaActivity : AppCompatActivity() {
         }
     }
 
+    private val editItemLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data ?: return@registerForActivityResult
+            val id = data.getIntExtra("item_id", -1)
+            val nome = data.getStringExtra("nome") ?: return@registerForActivityResult
+            val quantidade = data.getIntExtra("quantidade", 1)
+            val unidade = data.getStringExtra("unidade") ?: "un"
+            val categoria = data.getStringExtra("categoria") ?: "Utilidades Domésticas e Outros"
+
+            // Atualiza o item pelo ID
+            val idx = itemAtual.itens.indexOfFirst { it.id == id }
+            if (idx != -1) {
+                val it = itemAtual.itens[idx]
+                it.nome = nome
+                it.quantidade = quantidade
+                it.unidade = unidade
+                it.categoria = categoria
+
+                // Reordena e atualiza a UI
+                ordenarItens(notify = false)
+                adapter.notifyDataSetChanged()
+            }
+        }
+    }
+
+
     private val editarListaLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -159,7 +187,7 @@ class AddItemListaActivity : AppCompatActivity() {
                 putExtra("item_unidade", item.unidade)
                 putExtra("item_categoria", item.categoria)
             }
-            startActivity(intent)
+            editItemLauncher.launch(intent)
         }
         rvItens.adapter = adapter
 
