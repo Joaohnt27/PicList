@@ -9,6 +9,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 
 class AddItemActivity : AppCompatActivity() {
+    private var itemId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +31,22 @@ class AddItemActivity : AppCompatActivity() {
 
         // Configuração do Spinner de categorias
         val spinnerCategoria = findViewById<Spinner>(R.id.spinnerCategoria)
-        val categorias = arrayOf("Hortifrúti", "Padaria e Confeitaria", "Açougue e Peixaria", "Frios e Laticínios", "Congelados", "Mercearia Seca", "Doces e Snacks", "Bebidas", "Infantil", "Pet Shop", "Limpeza", "Higiene Pessoal e Beleza", "Saúde e Farmácia", "Utilidades Domésticas e Outros") // Categorias predefinidas
+        val categorias = arrayOf(
+            "Hortifrúti",
+            "Padaria e Confeitaria",
+            "Açougue e Peixaria",
+            "Frios e Laticínios",
+            "Congelados",
+            "Mercearia Seca",
+            "Doces e Snacks",
+            "Bebidas",
+            "Infantil",
+            "Pet Shop",
+            "Limpeza",
+            "Higiene Pessoal e Beleza",
+            "Saúde e Farmácia",
+            "Utilidades Domésticas e Outros"
+        ) // Categorias predefinidas
 
         val adapterCategoria = ArrayAdapter(
             this,
@@ -41,24 +57,50 @@ class AddItemActivity : AppCompatActivity() {
         }
         spinnerCategoria.adapter = adapterCategoria // Atribui o adapter ao Spinner de categorias
 
+        // Verifica se vai editar o item
+        val itemNome = intent.getStringExtra("item_nome")
+        val itemQuantidade = intent.getIntExtra("item_quantidade", -1)
+        val itemUnidade = intent.getStringExtra("item_unidade")
+        val itemCategoria = intent.getStringExtra("item_categoria")
+        itemId = intent.getIntExtra("item_id", -1)
+
+        if (itemId != -1){
+            title = "Editar Item"
+            findViewById<TextInputEditText>(R.id.etNome).setText(itemNome)
+            findViewById<TextInputEditText>(R.id.etQuantidade).setText(itemQuantidade.toString())
+            spinnerUnKg.setSelection(options.indexOf(itemUnidade))
+
+            spinnerCategoria.setSelection(categorias.indexOf(itemCategoria))
+        } else {
+            title = "Adicionar Item"
+        }
+
         // Botão de salvar
         findViewById<MaterialButton>(R.id.btnSalvar).setOnClickListener {
             val nome = findViewById<TextInputEditText>(R.id.etNome).text?.toString()?.trim().orEmpty()
             val quantidade = findViewById<TextInputEditText>(R.id.etQuantidade).text?.toString()?.toIntOrNull()
-            val unidade = spinnerUnKg.selectedItem?.toString() ?: "un"
-            val categoria = spinnerCategoria.selectedItem?.toString() ?: "Utilidades Domésticas e Outros"
+            val unidade = findViewById<Spinner>(R.id.spinnerUnKg).selectedItem?.toString() ?: "un"
+            val categoria = findViewById<Spinner>(R.id.spinnerCategoria).selectedItem?.toString() ?: "Utilidades Domésticas e Outros"
 
             if (nome.isEmpty() || quantidade == null) {
                 android.widget.Toast.makeText(this, "Jovem, preencha os campos de nome e quantidade!", android.widget.Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Para ver se está salvando o item
-            android.widget.Toast.makeText(
-                this,
-                "Item salvo: $nome | $quantidade $unidade | $categoria",
-                android.widget.Toast.LENGTH_LONG
-            ).show()
+            // Para ver se está salvando ou editando o item
+            if (itemId != -1) {
+                android.widget.Toast.makeText(
+                    this,
+                    "Item editado: $nome | $quantidade $unidade | $categoria",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+            } else {
+                android.widget.Toast.makeText(
+                    this,
+                    "Item salvo: $nome | $quantidade $unidade | $categoria",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+            }
 
             val data = Intent().apply {
                 putExtra("nome", nome)

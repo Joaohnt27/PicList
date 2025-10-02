@@ -55,8 +55,9 @@ class ItensAdapter(
         }
 
         holder.itemView.setOnClickListener {
-            holder.cb.isChecked = !holder.cb.isChecked
-            onClick(item)
+            if (!holder.cb.isChecked) {
+                onClick(item)
+            }
         }
     }
     private fun moverItemFimLista(position: Int) {

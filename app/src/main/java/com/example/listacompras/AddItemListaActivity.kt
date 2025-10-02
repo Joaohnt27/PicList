@@ -80,7 +80,8 @@ class AddItemListaActivity : AppCompatActivity() {
             val unidade = data.getStringExtra("unidade") ?: "un"
             val categoria = data.getStringExtra("categoria") ?: "Utilidades Domésticas e Outros"
 
-            val novo = Item(nome, quantidade, unidade, categoria, false)
+            val novoId = itemAtual.itens.size + 1
+            val novo = Item(novoId, nome, quantidade, unidade, categoria, false)
 
             val pos = itemAtual.itens.size
             itemAtual.itens.add(novo)
@@ -150,7 +151,16 @@ class AddItemListaActivity : AppCompatActivity() {
         ordenarItens(notify = false)
         rvItens = findViewById(R.id.rvListas)
         rvItens.layoutManager = LinearLayoutManager(this)
-        adapter = ItensAdapter(itemAtual.itens) { /* clique no item */ }
+        adapter = ItensAdapter(itemAtual.itens) { item ->
+            val intent = Intent(this, AddItemActivity::class.java).apply {
+                putExtra("item_id", item.id)
+                putExtra("item_nome", item.nome)
+                putExtra("item_quantidade", item.quantidade)
+                putExtra("item_unidade", item.unidade)
+                putExtra("item_categoria", item.categoria)
+            }
+            startActivity(intent)
+        }
         rvItens.adapter = adapter
 
         // Arrastar paraa deletar (Swipe-to-delete) - TESTANDO !!!
@@ -226,7 +236,7 @@ class AddItemListaActivity : AppCompatActivity() {
         }
 
         findViewById<MaterialButton>(R.id.btnEditar).setOnClickListener {
-            val intent = Intent(this, AddListaActivity::class.java)
+            val intent = Intent(    this, AddListaActivity::class.java)
             intent.putExtra("nome_lista", itemAtual.titulo)
             editarListaLauncher.launch(intent)
         }
