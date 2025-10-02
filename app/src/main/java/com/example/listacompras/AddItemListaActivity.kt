@@ -5,6 +5,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import java.text.Collator
 import java.util.Locale
 
@@ -190,6 +193,15 @@ class AddItemListaActivity : AppCompatActivity() {
             editItemLauncher.launch(intent)
         }
         rvItens.adapter = adapter
+
+        val etBusca = findViewById<TextInputEditText>(R.id.etBusca)
+        etBusca.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                adapter.filter(s?.toString() ?: "")
+            }
+        })
 
         // Arrastar paraa deletar (Swipe-to-delete) - TESTANDO !!!
         val swipeToDelete = object : ItemTouchHelper.SimpleCallback(
