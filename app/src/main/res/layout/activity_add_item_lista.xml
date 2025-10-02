@@ -7,13 +7,14 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- Editar -->
+    <!-- Voltar -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnVoltar"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginTop="12dp"
+        app:cornerRadius="24dp"
         android:contentDescription="Voltar"
         app:backgroundTint="@color/gray"
         app:icon="@drawable/outline_arrow_back_24"
@@ -21,21 +22,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Buscar -->
+    <!-- Menu -->
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnEditar"
+        android:id="@+id/btnMenu"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginTop="12dp"
-        android:contentDescription="@string/app_name"
+        android:contentDescription="Menu"
         app:backgroundTint="@color/gray"
         app:cornerRadius="24dp"
-        app:icon="@drawable/edit_24px"
+        app:icon="@drawable/menu_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
         app:iconTint="@color/green"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Campo de busca -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilBusca"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -50,7 +52,7 @@
         app:hintTextColor="@color/green"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnVoltar"
-        app:layout_constraintEnd_toStartOf="@id/btnEditar"
+        app:layout_constraintEnd_toStartOf="@id/btnMenu"
         app:layout_constraintBottom_toBottomOf="@id/btnVoltar">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -98,18 +100,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"/>
-
-    <!-- Botão de apagar lista -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabDel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="80dp"
-        android:contentDescription="@string/app_name"
-        app:backgroundTint="@color/red"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/delete_forever_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
-        app:tint="@android:color/white" />
 </androidx.constraintlayout.widget.ConstraintLayout>

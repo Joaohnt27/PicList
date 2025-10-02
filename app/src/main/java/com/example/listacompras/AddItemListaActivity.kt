@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +14,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import java.text.Collator
@@ -120,7 +120,7 @@ class AddItemListaActivity : AppCompatActivity() {
                 lista?.titulo = novoNome
                 itemAtual = lista!!
 
-                findViewById<MaterialButton>(R.id.btnEditar).text = novoNome
+               // findViewById<MaterialButton>(R.id.btnEditar).text = novoNome
                 findViewById<TextView>(R.id.tvTitulo).text = novoNome
             }
             adapter.notifyDataSetChanged()
@@ -235,23 +235,38 @@ class AddItemListaActivity : AppCompatActivity() {
             addItemLauncher.launch(intent)
         }
 
-        findViewById<MaterialButton>(R.id.btnEditar).setOnClickListener {
-            val intent = Intent(    this, AddListaActivity::class.java)
-            intent.putExtra("nome_lista", itemAtual.titulo)
-            editarListaLauncher.launch(intent)
-        }
-        findViewById<MaterialButton>(R.id.btnVoltar).setOnClickListener { finish() }
+        val btnMenu = findViewById<MaterialButton>(R.id.btnMenu)
 
-        findViewById<FloatingActionButton>(R.id.fabDel).setOnClickListener {
-            MaterialAlertDialogBuilder(this)
-                .setTitle("Excluir a lista?")
-                .setMessage("Você realmente deseja excluir a lista inteira, jovem?")
-                .setNegativeButton("Cancelar", null)
-                .setPositiveButton("Excluir") { _, _ ->
-                    // Exclui a lista se confirmado
-                    excluirLista()  // Método para excluir a lista
+        btnMenu.setOnClickListener { view ->
+            val popup = PopupMenu(this, view)
+            popup.menuInflater.inflate(R.menu.option_menu, popup.menu)
+
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.editarLista -> {
+                        val intent = Intent(    this, AddListaActivity::class.java)
+                        intent.putExtra("nome_lista", itemAtual.titulo)
+                        editarListaLauncher.launch(intent)
+                        true
+                    }
+                    R.id.excluirLista -> {
+                        // Confirmação antes de excluir
+                        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                            .setTitle("Excluir a lista?")
+                            .setMessage("Tem certeza que deseja excluir \"${itemAtual.titulo}\" , jovem?")
+                            .setNegativeButton("Cancelar", null)
+                            .setPositiveButton("Excluir") { _, _ ->
+                                excluirLista() // Método para excluir a lista
+                            }
+                            .show()
+                        true
+                    }
+                    else -> false
                 }
-                .show()
+            }
+            popup.show()
         }
+
+        findViewById<MaterialButton>(R.id.btnVoltar).setOnClickListener { finish() }
     }
 }
