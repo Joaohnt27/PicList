@@ -9,7 +9,7 @@
 
 ## 👨‍🏫 **Orientação**
 O projeto foi orientado pelo **Professor Bruno de Azevedo Mendonça** - **[[@bmendoncaunaerp](https://github.com/bmendoncaunaerp).]** <br>
-Você pode conferir mais sobre ele no [LinkedIn](https://www.linkedin.com/in/brunoazevedomendonca){:target="_blank"}.
+Você pode conferir mais sobre ele no <a href="https://www.linkedin.com/in/brunoazevedomendonca" target="_blank">LinkedIn</a>.
 
 
 ## ⚙️ **Funcionalidades**
