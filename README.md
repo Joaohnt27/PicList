@@ -3,9 +3,9 @@
 **PicList** é um aplicativo de **Lista de Compras** desenvolvido para **Android Nativo** utilizando **Kotlin**. O objetivo é proporcionar uma maneira fácil e prática de criar e gerenciar listas de compras, com funcionalidades como login, cadastro de usuários, e a capacidade de adicionar, editar e remover itens nas listas.
 
 ## 📜 **Membros do Projeto**
-- **Arthur Vital Fontana** - **[[@LuckR4y](https://github.com/LuckR4y)]**
-- **João Henrique Nazar Tavares** - **[[@Joaohnt27](https://github.com/Joaohnt27)]**
-- **Rafael Mele Porto** - **[[@DevRigby](https://github.com/DevRigby)]**
+- **Arthur Vital Fontana (839832)** - **[[@LuckR4y](https://github.com/LuckR4y)]**
+- **João Henrique Nazar Tavares (839463)** - **[[@Joaohnt27](https://github.com/Joaohnt27)]**
+- **Rafael Mele Porto (840897)** - **[[@DevRigby](https://github.com/DevRigby)]**
 
 ## 👨‍🏫 **Orientação**
 O projeto foi orientado pelo **Professor Bruno de Azevedo Mendonça** - **[[@bmendoncaunaerp](https://github.com/bmendoncaunaerp).]** <br>
