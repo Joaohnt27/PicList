@@ -1,11 +1,14 @@
-package com.example.listacompras
+package com.example.listacompras.ui.cadastro
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.listacompras.data.memory.AuthMemory
+import com.example.listacompras.data.model.Usuario
 import com.example.listacompras.databinding.ActivityCadastroBinding
+import com.example.listacompras.ui.login.LoginActivity
 import com.google.android.material.snackbar.Snackbar
 
 class CadastroActivity : AppCompatActivity() {

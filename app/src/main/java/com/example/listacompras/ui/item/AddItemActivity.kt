@@ -1,11 +1,13 @@
-package com.example.listacompras
+package com.example.listacompras.ui.item
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.listacompras.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 
@@ -65,7 +67,7 @@ class AddItemActivity : AppCompatActivity() {
             val categoria = spinnerCategoria.selectedItem?.toString() ?: "Utilidades Domésticas e Outros"
 
             if (nome.isEmpty() || quantidade == null) {
-                android.widget.Toast.makeText(this, "Jovem, preencha os campos de nome e quantidade!", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Jovem, preencha os campos de nome e quantidade!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

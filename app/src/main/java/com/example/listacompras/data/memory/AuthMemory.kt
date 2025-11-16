@@ -1,4 +1,6 @@
-package com.example.listacompras
+package com.example.listacompras.data.memory
+
+import com.example.listacompras.data.model.Usuario
 
 object AuthMemory {
     private val users = mutableListOf<Usuario>()

@@ -1,4 +1,4 @@
-package com.example.listacompras
+package com.example.listacompras.ui.lista
 
 import android.content.Intent
 import android.graphics.Canvas
@@ -7,15 +7,25 @@ import android.graphics.Paint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.PopupMenu
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.listacompras.ui.item.AddItemActivity
+import com.example.listacompras.ItensAdapter
+import com.example.listacompras.R
+import com.example.listacompras.Session
+import com.example.listacompras.data.memory.ListMemory
+import com.example.listacompras.data.model.Item
+import com.example.listacompras.data.model.Lista
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -75,7 +85,7 @@ class AddItemListaActivity : AppCompatActivity() {
     private val addItemLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        android.util.Log.d("ITENS", "launcher code=${result.resultCode}")
+        Log.d("ITENS", "launcher code=${result.resultCode}")
         if (result.resultCode == RESULT_OK) {
             val data = result.data ?: return@registerForActivityResult
             val nome = data.getStringExtra("nome") ?: return@registerForActivityResult
@@ -91,7 +101,7 @@ class AddItemListaActivity : AppCompatActivity() {
             adapter.notifyItemInserted(pos)
             rvItens.scrollToPosition(pos)
 
-            android.widget.Toast.makeText(this, "Item adicionado: $nome", android.widget.Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Item adicionado: $nome", Toast.LENGTH_SHORT).show()
 
             // Ela reordena a lista e atualiza o adapter
             ordenarItens()
@@ -282,14 +292,14 @@ class AddItemListaActivity : AppCompatActivity() {
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.editarLista -> {
-                        val intent = Intent(    this, AddListaActivity::class.java)
+                        val intent = Intent(this, AddListaActivity::class.java)
                         intent.putExtra("nome_lista", itemAtual.titulo)
                         editarListaLauncher.launch(intent)
                         true
                     }
                     R.id.excluirLista -> {
                         // Confirmação antes de excluir
-                        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                        MaterialAlertDialogBuilder(this)
                             .setTitle("Excluir a lista?")
                             .setMessage("Tem certeza que deseja excluir \"${itemAtual.titulo}\" , jovem?")
                             .setNegativeButton("Cancelar", null)

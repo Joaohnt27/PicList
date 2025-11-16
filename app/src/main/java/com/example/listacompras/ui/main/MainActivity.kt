@@ -1,18 +1,28 @@
-package com.example.listacompras
+package com.example.listacompras.ui.main
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.listacompras.ui.lista.AddItemListaActivity
+import com.example.listacompras.ui.lista.AddListaActivity
+import com.example.listacompras.EspacamentoItens
+import com.example.listacompras.ui.lista.ListasAdapter
+import com.example.listacompras.R
+import com.example.listacompras.Session
+import com.example.listacompras.data.memory.ListMemory
+import com.example.listacompras.data.model.Lista
+import com.example.listacompras.ui.login.LoginActivity
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputEditText
-import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
+import java.text.Normalizer
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnLogout)
+        findViewById<MaterialButton>(R.id.btnLogout)
             .setOnClickListener {
                 MaterialAlertDialogBuilder(this)
                     .setTitle("Sair da conta?")
@@ -85,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
     // Normaliza para comparar (sem acento e minúsculas)
     private fun normalizarTxt(s: String): String {
-        val n = java.text.Normalizer.normalize(s.trim(), java.text.Normalizer.Form.NFD)
+        val n = Normalizer.normalize(s.trim(), Normalizer.Form.NFD)
         return n.replace("\\p{M}+".toRegex(), "").lowercase()
     }
 
@@ -116,7 +126,7 @@ class MainActivity : AppCompatActivity() {
     private val editarListaLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             val data = result.data ?: return@registerForActivityResult
             val novoNome = data.getStringExtra("titulo") ?: return@registerForActivityResult
             val nomeAntigo = data.getStringExtra("nome_antigo") ?: return@registerForActivityResult

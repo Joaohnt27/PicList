@@ -1,4 +1,4 @@
-package com.example.listacompras
+package com.example.listacompras.ui.lista
 
 import android.net.Uri
 import android.view.LayoutInflater
@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.listacompras.R
+import com.example.listacompras.data.model.Lista
 
 class ListasAdapter(
     private var itens: MutableList<Lista>,

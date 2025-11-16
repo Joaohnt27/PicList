@@ -1,4 +1,6 @@
-package com.example.listacompras
+package com.example.listacompras.data.memory
+
+import com.example.listacompras.data.model.Lista
 
 object ListMemory {
     private val data = mutableMapOf<String, MutableList<Lista>>()
@@ -25,5 +27,3 @@ object ListMemory {
         set(email, listas)
     }
 }
-
-

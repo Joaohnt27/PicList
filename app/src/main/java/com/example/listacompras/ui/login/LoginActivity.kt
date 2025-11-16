@@ -1,8 +1,12 @@
-package com.example.listacompras
+package com.example.listacompras.ui.login
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.listacompras.ui.cadastro.CadastroActivity
+import com.example.listacompras.ui.main.MainActivity
+import com.example.listacompras.Session
+import com.example.listacompras.data.memory.AuthMemory
 import com.example.listacompras.databinding.ActivityLoginBinding
 import com.google.android.material.snackbar.Snackbar
 

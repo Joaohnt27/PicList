@@ -1,4 +1,4 @@
-package com.example.listacompras
+package com.example.listacompras.data.model
 
 data class Item(
     val id: Int,
@@ -8,4 +8,3 @@ data class Item(
     var categoria: String,
     var marcado: Boolean
 )
-
