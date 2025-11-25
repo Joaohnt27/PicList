@@ -2,6 +2,8 @@ package com.example.listacompras.ui.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.listacompras.Session
@@ -9,6 +11,7 @@ import com.example.listacompras.databinding.ActivityLoginBinding
 import com.example.listacompras.ui.auth.AuthViewModel // Certifique-se que o pacote está certo
 import com.example.listacompras.ui.cadastro.CadastroActivity
 import com.example.listacompras.ui.main.MainActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 
 class LoginActivity : AppCompatActivity() {
@@ -28,6 +31,7 @@ class LoginActivity : AppCompatActivity() {
 
         setupListeners()
         setupObservers()
+        setupRecoveryObserver()
     }
 
     // Função p/ verificar se já existe usuário logado no Firebase
@@ -60,6 +64,53 @@ class LoginActivity : AppCompatActivity() {
 
         binding.btnCriarConta.setOnClickListener {
             startActivity(Intent(this, CadastroActivity::class.java))
+        }
+
+        binding.tvEsqueceuSenha.setOnClickListener {
+            showRecoverDialog()
+        }
+    }
+
+    private fun showRecoverDialog() {
+        val inputEmail = EditText(this)
+        inputEmail.hint = "Digite seu e-mail"
+
+        // Tenta preencher automaticamente se o usuário já digitou no campo de login
+        inputEmail.setText(binding.etEmail.text.toString())
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Recuperar Senha")
+            .setMessage("Informe seu e-mail para receber o link de redefinição, jovem.")
+            .setView(inputEmail)
+            .setNegativeButton("Cancelar", null)
+            .setPositiveButton("Enviar") { _, _ ->
+                val email = inputEmail.text.toString().trim()
+                if (email.isNotEmpty()) {
+                    viewModel.recuperarSenha(email)
+                } else {
+                    Toast.makeText(this, "Informe um e-mail válido", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .show()
+    }
+
+    private fun setupRecoveryObserver() {
+        viewModel.recoveryResult.observe(this) { result ->
+            result.onSuccess {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle("E-mail enviado, jovem!")
+                    .setMessage("Verifique sua caixa de entrada (e spam) para redefinir sua senha.")
+                    .setPositiveButton("OK", null)
+                    .show()
+            }
+            result.onFailure { e ->
+                val msg = when {
+                    e.message?.contains("user-not-found") == true -> "Usuário não encontrado."
+                    e.message?.contains("badly formatted") == true -> "E-mail inválido."
+                    else -> "Erro: ${e.message}"
+                }
+                Snackbar.make(binding.root, msg, Snackbar.LENGTH_LONG).show()
+            }
         }
     }
 

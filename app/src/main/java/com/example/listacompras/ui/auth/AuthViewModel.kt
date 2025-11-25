@@ -22,6 +22,10 @@ class AuthViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    // Obsevar o resultado da rec de senha
+    private val _recoveryResult = MutableLiveData<Result<Boolean>>()
+    val recoveryResult: LiveData<Result<Boolean>> = _recoveryResult
+
     fun login(email: String, pass: String) {
         _isLoading.value = true
         viewModelScope.launch {
@@ -46,5 +50,14 @@ class AuthViewModel : ViewModel() {
 
     fun logout() {
         repository.logout()
+    }
+
+    fun recuperarSenha(email: String) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            val result = repository.recuperarSenha(email)
+            _recoveryResult.value = result
+            _isLoading.value = false
+        }
     }
 }

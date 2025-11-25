@@ -10,6 +10,7 @@ interface AuthRepository {
     suspend fun cadastro(email: String, pass: String): Result<FirebaseUser?>
     fun logout()
     fun getCurrentUser(): FirebaseUser?
+    suspend fun recuperarSenha(email: String): Result<Boolean>
 }
 
 // O COMO fazer
@@ -41,5 +42,14 @@ class AuthRepositoryImpl : AuthRepository {
 
     override fun getCurrentUser(): FirebaseUser? {
         return auth.currentUser
+    }
+    override suspend fun recuperarSenha(email: String): Result<Boolean> {
+        return try {
+            // O Firebase envia o email automaticamente
+            auth.sendPasswordResetEmail(email).await()
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
