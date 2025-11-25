@@ -59,4 +59,5 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("androidx.activity:activity-ktx:1.8.2")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 }

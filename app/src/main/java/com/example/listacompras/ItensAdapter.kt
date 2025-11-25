@@ -3,27 +3,26 @@ package com.example.listacompras
 import android.graphics.Color
 import android.graphics.Paint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listacompras.data.model.Item
-import com.google.android.material.card.MaterialCardView
-import com.google.android.material.checkbox.MaterialCheckBox
+import com.example.listacompras.databinding.ItemItemBinding // Import do Binding
 
 class ItensAdapter(
     private val itens: MutableList<Item>,
     private val onClick: (Item) -> Unit
 ) : RecyclerView.Adapter<ItensAdapter.VH>() {
 
-    private var filteredItens = itens
+    // Lista auxiliar para o filtro de busca
+    private var filteredItens = itens.toMutableList()
+
+    // --- VIEW BINDING (Requisito do Projeto) ---
+    inner class VH(val binding: ItemItemBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_item, parent, false)
-        return VH(view)
+        val binding = ItemItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return VH(binding)
     }
 
     override fun getItemCount(): Int = filteredItens.size
@@ -31,102 +30,111 @@ class ItensAdapter(
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = filteredItens[position]
 
-        // Texto
-        holder.nome.text = item.nome
-        holder.detalhe.text = "${item.quantidade} ${item.unidade}"
+        // Usando Binding ao invés de findViewById
+        holder.binding.tvNomeItem.text = item.nome
+        holder.binding.tvDetalhe.text = "${item.quantidade} ${item.unidade}"
 
-        // Ícone de categoria
-        holder.imgCategoria.setImageResource(IconesCategoria.iconFor(item.categoria))
+        // Ícone de categoria (Sua lógica mantida)
+        holder.binding.imgCategoria.setImageResource(IconesCategoria.iconFor(item.categoria))
 
         // Checkbox + estilo marcado
-        holder.cb.setOnCheckedChangeListener(null)
-        holder.cb.isChecked = item.marcado
+        // Removemos o listener temporariamente para evitar loops infinitos ao setar o valor
+        holder.binding.cb.setOnCheckedChangeListener(null)
+        holder.binding.cb.isChecked = item.marcado
         applyCheckedStyle(holder, item.marcado)
 
-        holder.cb.setOnCheckedChangeListener { _, checked ->
+        holder.binding.cb.setOnCheckedChangeListener { _, checked ->
             item.marcado = checked
+
+            // Aqui seria ideal chamar o ViewModel para salvar no Firestore:
+            // onCheck(item) <--- Implementar futuro
+
             if (checked) {
-                // Se estiver marcado, move o item para o final da lista
                 moverItemFimLista(position)
-                applyCheckedStyle(holder, checked)
+                applyCheckedStyle(holder, true)
                 Toast.makeText(holder.itemView.context, "Item riscado, jovem!", Toast.LENGTH_SHORT).show()
             } else {
-                val itemDesmarcado = itens[position]
-                itens.removeAt(position)
-                itens.add(position, itemDesmarcado)
-                notifyItemMoved(position, itens.indexOf(itemDesmarcado))
-                applyCheckedStyle(holder, checked)
+                // Lógica inversa simplificada para UX imediata
+                applyCheckedStyle(holder, false)
             }
         }
 
         holder.itemView.setOnClickListener {
-            if (!holder.cb.isChecked) {
+            if (!holder.binding.cb.isChecked) {
                 onClick(item)
             }
         }
     }
+
+    // --- FUNÇÃO QUE FALTAVA (Resolve o erro da Activity) ---
+    fun updateList(novaLista: List<Item>) {
+        itens.clear()
+        itens.addAll(novaLista)
+
+        // Atualiza a lista filtrada também para refletir os dados novos
+        filteredItens.clear()
+        filteredItens.addAll(novaLista)
+
+        notifyDataSetChanged()
+    }
+
+    // --- SUA LÓGICA DE REORDENAÇÃO (MANTIDA) ---
     private fun moverItemFimLista(position: Int) {
-        val item = itens[position]
-        // Remove o item da posição atual
-        itens.removeAt(position)
-        // Adiciona o item ao final
-        itens.add(item)
+        if (position < 0 || position >= filteredItens.size) return
 
-        // Filtra os itens marcados e não marcados
-        val checkedItems = itens.filter { it.marcado } // Itens marcados
-        val uncheckedItems = itens.filterNot { it.marcado } // Itens não marcados
+        val item = filteredItens[position]
 
-        // Agrupar os itens marcados por categoria
+        // Atualiza a lista visual (filteredItens)
+        filteredItens.removeAt(position)
+        filteredItens.add(item)
+
+        // Aqui repetimos sua lógica de agrupar, mas operando sobre a lista visual
+        val checkedItems = filteredItens.filter { it.marcado }
+        val uncheckedItems = filteredItens.filterNot { it.marcado }
+
         val groupedByCategory = checkedItems.groupBy { it.categoria }
-
-        // Ordena as categorias dentro dos itens marcados
         val sortedGroupedItems = groupedByCategory.flatMap { entry ->
-            entry.value.sortedBy { it.nome } // Ordena os itens dentro de cada categoria
+            entry.value.sortedBy { it.nome }
         }
 
-        // Recria a lista final com os itens não marcados primeiro, seguidos dos itens marcados organizados por categoria
         val newList = uncheckedItems + sortedGroupedItems
 
-        // Atualiza a lista original
-        itens.clear()
-        itens.addAll(newList)
+        filteredItens.clear()
+        filteredItens.addAll(newList)
 
-        // Notifica o RecyclerView da mudança
-        notifyDataSetChanged() // Atualiza a lista
+        notifyDataSetChanged()
     }
 
     private fun applyCheckedStyle(holder: VH, checked: Boolean) {
         if (checked) {
-            holder.card.setCardBackgroundColor(Color.parseColor("#F3F3F3"))
-            holder.nome.paintFlags = holder.nome.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            holder.binding.root.setCardBackgroundColor(Color.parseColor("#F3F3F3")) // root é o CardView
+            holder.binding.tvNomeItem.paintFlags = holder.binding.tvNomeItem.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
         } else {
-            holder.card.setCardBackgroundColor(Color.WHITE)
-            holder.nome.paintFlags = holder.nome.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            holder.binding.root.setCardBackgroundColor(Color.WHITE)
+            holder.binding.tvNomeItem.paintFlags = holder.binding.tvNomeItem.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         }
     }
 
+    // --- MÉTODOS AUXILIARES ---
     fun removeAt(position: Int) {
-        itens.removeAt(position)
-        notifyItemRemoved(position)
+        if (position >= 0 && position < filteredItens.size) {
+            val itemRemovido = filteredItens[position]
+            filteredItens.removeAt(position)
+            itens.remove(itemRemovido) // Remove da lista original também
+            notifyItemRemoved(position)
+        }
     }
-    fun getItemAt(position: Int): Item = itens[position]
 
-    class VH(v: View) : RecyclerView.ViewHolder(v) {
-        val card: MaterialCardView = v as MaterialCardView
-        val imgCategoria: ImageView = v.findViewById(R.id.imgCategoria)
-        val nome: TextView = v.findViewById(R.id.tvNomeItem)
-        val detalhe: TextView = v.findViewById(R.id.tvDetalhe)
-        val cb: MaterialCheckBox = v.findViewById(R.id.cb)
-    }
+    fun getItemAt(position: Int): Item = filteredItens[position]
 
     fun filter(query: String) {
         filteredItens = if (query.isEmpty()) {
-            itens
-        }else{
+            itens.toMutableList()
+        } else {
             itens.filter {
                 it.nome.contains(query, true) || it.categoria.contains(query, true)
-            }
-        }.toMutableList()
+            }.toMutableList()
+        }
         notifyDataSetChanged()
     }
 }

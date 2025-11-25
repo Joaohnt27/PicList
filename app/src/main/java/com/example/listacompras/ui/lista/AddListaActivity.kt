@@ -1,19 +1,17 @@
 package com.example.listacompras.ui.lista
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.example.listacompras.R
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.textfield.TextInputEditText
+import com.example.listacompras.databinding.ActivityAddListaBinding // Import do Binding
 
 class AddListaActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityAddListaBinding
     private var imageUri: Uri? = null
 
     private val pickImage = registerForActivityResult(
@@ -21,57 +19,73 @@ class AddListaActivity : AppCompatActivity() {
     ) { uri ->
         if (uri != null) {
             imageUri = uri
-            findViewById<ImageView>(R.id.imgPreview).setImageURI(uri)
+            binding.imgPreview.setImageURI(uri)
+
+            // --- CORREÇÃO IMPORTANTE PARA O FIREBASE STORAGE ---
+            // Isso garante que o app tenha permissão persistente para ler o arquivo
+            // mesmo depois de fechar a galeria. Sem isso, o upload falha silenciosamente.
+            try {
+                contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            } catch (e: Exception) {
+                // Algumas galerias não suportam persistência, mas a maioria sim.
+                e.printStackTrace()
+            }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_lista)
+        // 1. Configuração do ViewBinding
+        binding = ActivityAddListaBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val etNome = findViewById<TextInputEditText>(R.id.etNome)
-        // Recebe o nome da lista atual, se houver permite edição
+        // Recebe dados para edição (se houver)
         val nomeAtual = intent.getStringExtra("nome_lista")
+        val idLista = intent.getStringExtra("id_lista") // Agora precisamos do ID
+
+        // Preenche os campos se for edição
         if (!nomeAtual.isNullOrEmpty()) {
-            etNome.setText(nomeAtual)
+            binding.etNome.setText(nomeAtual)
+            binding.btnSalvar.text = "Atualizar Lista"
         }
 
-        findViewById<FloatingActionButton>(R.id.fabPick).setOnClickListener {
+        // Botão para escolher imagem
+        binding.fabPick.setOnClickListener {
             pickImage.launch("image/*")
         }
 
-        // Botão salvar (criação ou edição)
-        findViewById<MaterialButton>(R.id.btnSalvar).setOnClickListener {
-            val novoNome = etNome.text?.toString()?.trim().orEmpty()
+        // Botão Salvar
+        binding.btnSalvar.setOnClickListener {
+            val novoNome = binding.etNome.text?.toString()?.trim().orEmpty()
+
             if (novoNome.isEmpty()) {
-                etNome.error = "Informe o nome"
+                binding.etNome.error = "Informe o nome"
                 return@setOnClickListener
             }
 
             val data = Intent().apply {
                 putExtra("titulo", novoNome)
+                // Envia a URI como string para a MainActivity converter e fazer upload
                 putExtra("imageUri", imageUri?.toString())
-                putExtra("editar", !nomeAtual.isNullOrEmpty()) // indica se é edição
-                putExtra("nome_antigo", nomeAtual) // para atualizar memória se for edição
+
+                // Dados para controle de edição
+                putExtra("editar", !nomeAtual.isNullOrEmpty())
+                putExtra("id_lista", idLista) // Devolvemos o ID para o ViewModel saber quem atualizar
+                putExtra("nome_antigo", nomeAtual)
             }
 
-            Toast.makeText(
-                this,
-                if (nomeAtual != null) "Lista atualizada, jovem! ;)" else "Nova lista criada! ;)",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(this, "Salvando...", Toast.LENGTH_SHORT).show()
 
-            setResult(RESULT_OK, data)
+            setResult(Activity.RESULT_OK, data)
             finish()
         }
 
-        // Botão cancelar
-        findViewById<MaterialButton>(R.id.btnCancelar).setOnClickListener {
-            Toast.makeText(
-                this,
-                if (nomeAtual != null) "Atualização de lista cancelada, jovem. :(" else "Criação de lista cancelada, jovem. :(",
-                Toast.LENGTH_SHORT).show()
-            setResult(RESULT_CANCELED)
+        // Botão Cancelar
+        binding.btnCancelar.setOnClickListener {
+            setResult(Activity.RESULT_CANCELED)
             finish()
         }
     }

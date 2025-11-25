@@ -1,24 +1,57 @@
 package com.example.listacompras.ui.lista
 
-import android.net.Uri
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.listacompras.R
 import com.example.listacompras.data.model.Lista
+import com.example.listacompras.databinding.ItemListaBinding
 
 class ListasAdapter(
     private var itens: MutableList<Lista>,
     private val onClick: (Lista) -> Unit,
-    private val onEdit: ((Lista) -> Unit)? = null // segurar para editar
+    private val onEdit: ((Lista) -> Unit)? = null
 ) : RecyclerView.Adapter<ListasAdapter.VH>() {
 
     private var full: MutableList<Lista> = itens.toMutableList()
 
-    // Sempre retorna todas as listas
+    inner class VH(val binding: ItemListaBinding) : RecyclerView.ViewHolder(binding.root)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+        val binding = ItemListaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return VH(binding)
+    }
+
+    override fun onBindViewHolder(holder: VH, position: Int) {
+        val item = itens[position]
+
+        // Texto via Binding
+        holder.binding.tvTitulo.text = item.titulo
+
+        if (!item.imageUri.isNullOrEmpty()) {
+            // carrega tanto Uri local quanto URL do firebase
+            Glide.with(holder.itemView.context)
+                .load(item.imageUri)
+                .centerCrop()
+                .placeholder(R.drawable.placeholderimg)
+                .error(R.drawable.placeholderimg)
+                .into(holder.binding.imgThumb)
+        } else {
+            // Se não tem link nenhum, coloca o placeholder manual
+            holder.binding.imgThumb.setImageResource(R.drawable.placeholderimg)
+        }
+
+        holder.itemView.setOnClickListener { onClick(item) }
+
+        holder.itemView.setOnLongClickListener {
+            onEdit?.invoke(item)
+            onEdit != null
+        }
+    }
+
+    override fun getItemCount() = itens.size
+
     fun currentItems(): List<Lista> = full
 
     fun filter(query: String) {
@@ -31,7 +64,7 @@ class ListasAdapter(
     fun addItem(item: Lista) {
         full.add(0, item)
         full.sortBy { it.titulo.lowercase() }
-        filter("") // reseta exibição
+        filter("")
     }
 
     fun setItems(novas: List<Lista>) {
@@ -40,9 +73,7 @@ class ListasAdapter(
         filter("")
     }
 
-    // Renomeia em full e na lista visível; atualiza só a célula quando possível
     fun renameByTitle(oldTitle: String, newTitle: String, newImageUri: String? = null) {
-        // atualiza em full
         val idxFull = full.indexOfFirst { it.titulo == oldTitle }
         if (idxFull >= 0) {
             val antigo = full[idxFull]
@@ -52,7 +83,6 @@ class ListasAdapter(
             )
         }
 
-        // atualizaa na lista exibida
         val idxShown = itens.indexOfFirst { it.titulo == oldTitle }
         if (idxShown >= 0) {
             val antigo = itens[idxShown]
@@ -62,38 +92,7 @@ class ListasAdapter(
             )
             notifyItemChanged(idxShown)
         } else {
-            // se estiver filtrado e o item não aparecer, sincroniza a UI
             notifyDataSetChanged()
         }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_lista, parent, false)
-        return VH(v)
-    }
-
-    override fun getItemCount() = itens.size
-
-    override fun onBindViewHolder(holder: VH, position: Int) {
-        val item = itens[position]
-        holder.titulo.text = item.titulo
-
-        if (item.imageUri != null) {
-            holder.img.setImageURI(Uri.parse(item.imageUri))
-        } else {
-            holder.img.setImageResource(R.drawable.placeholderimg)
-        }
-
-        holder.itemView.setOnClickListener { onClick(item) }
-        holder.itemView.setOnLongClickListener {
-            onEdit?.invoke(item)
-            onEdit != null
-        }
-    }
-
-    class VH(v: View) : RecyclerView.ViewHolder(v) {
-        val img: ImageView = v.findViewById(R.id.imgThumb)
-        val titulo: TextView = v.findViewById(R.id.tvTitulo)
     }
 }

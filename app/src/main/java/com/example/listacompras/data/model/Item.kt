@@ -1,10 +1,11 @@
 package com.example.listacompras.data.model
 
 data class Item(
-    val id: Int,
-    var nome: String,
-    var quantidade: Int,
-    var unidade: String,
-    var categoria: String,
-    var marcado: Boolean
+    var id: String = "",        // ID do Firestore (String)
+    val listaId: String = "",   // ID da Lista pai
+    val nome: String = "",
+    val quantidade: Int = 1,
+    val unidade: String = "un",
+    val categoria: String = "Outros",
+    var marcado: Boolean = false
 )
