@@ -65,4 +65,22 @@ class ListaViewModel : ViewModel() {
             }
         }
     }
+
+    fun pesquisar(query: String) {
+        // Se a busca for vazia, traz tudo normal
+        if (query.isBlank()) {
+            buscarListas()
+            return
+        }
+
+        _isLoading.value = true
+        viewModelScope.launch {
+            // Chama a nova query do repository
+            val result = repository.pesquisarListas(query)
+            result.onSuccess { listaFiltrada ->
+                _listas.value = listaFiltrada
+            }
+            _isLoading.value = false
+        }
+    }
 }

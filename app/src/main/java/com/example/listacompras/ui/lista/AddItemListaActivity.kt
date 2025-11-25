@@ -170,12 +170,15 @@ class AddItemListaActivity : AppCompatActivity() {
             popup.show()
         }
 
-        // Busca
+        // Busca de Itens
         binding.etBusca.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                adapter.filter(s.toString())
+                val texto = s.toString()
+                // Chama o ViewModel passando o ID da lista atual e o texto
+                itemViewModel.pesquisar(idLista, texto)
             }
         })
     }

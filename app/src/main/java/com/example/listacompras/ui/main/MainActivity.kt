@@ -103,9 +103,12 @@ class MainActivity : AppCompatActivity() {
         binding.etBusca.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Filtra localmente o que já tá no adapter
-                adapter.filter(s?.toString() ?: "")
+                val texto = s.toString()
+                // ANTES: adapter.filter(texto)
+                // DEPOIS (RF005 - Query no Firestore):
+                listaViewModel.pesquisar(texto)
             }
         })
     }

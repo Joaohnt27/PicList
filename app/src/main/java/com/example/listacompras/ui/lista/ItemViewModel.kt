@@ -68,4 +68,18 @@ class ItemViewModel : ViewModel() {
 
         return unchecked.sortedWith(comparator) + checked.sortedWith(comparator)
     }
+
+    fun pesquisar(listaId: String, query: String) {
+        if (query.isBlank()) {
+            carregarItens(listaId)
+            return
+        }
+
+        viewModelScope.launch {
+            repository.pesquisarItens(listaId, query).onSuccess { listaBruta ->
+                // Ainda aplicamos a ordenação visual (categorias) no resultado da busca
+                _itens.value = ordenarLista(listaBruta)
+            }
+        }
+    }
 }

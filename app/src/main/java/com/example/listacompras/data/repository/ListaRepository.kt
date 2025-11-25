@@ -13,6 +13,7 @@ interface ListaRepository {
     suspend fun buscarListas(): Result<List<Lista>>
     suspend fun excluirLista(lista: Lista): Result<Boolean>
     suspend fun editarLista(lista: Lista, novaImageUri: Uri?): Result<Boolean>
+    suspend fun pesquisarListas(query: String): Result<List<Lista>>
 }
 
 class ListaRepositoryImpl : ListaRepository {
@@ -138,6 +139,26 @@ class ListaRepositoryImpl : ListaRepository {
             // 3. Atualiza no Firestore
             db.collection(collectionName).document(lista.id).set(listaAtualizada).await()
             Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun pesquisarListas(query: String): Result<List<Lista>> {
+        return try {
+            val user = auth.currentUser ?: throw Exception("Usuário Off")
+
+            // TRUQUE DO FIRESTORE PARA BUSCA DE TEXTO ("COMEÇA COM...")
+            // Ex: titulo >= "Arr" E titulo <= "Arr" + "uf8ff" (último caractere possível)
+            val snapshot = db.collection("listas")
+                .whereEqualTo("userId", user.uid)
+                .whereGreaterThanOrEqualTo("titulo", query)
+                .whereLessThanOrEqualTo("titulo", query + "\uf8ff")
+                .get()
+                .await()
+
+            val listas = snapshot.toObjects(Lista::class.java)
+            Result.success(listas)
         } catch (e: Exception) {
             Result.failure(e)
         }
