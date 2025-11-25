@@ -60,7 +60,7 @@ class CadastroActivity : AppCompatActivity() {
 
             // Chamada ao ViewModel (Firebase) -> Obs: Por enquanto o Firebase Auth só salva email/senha.
             // O "nome" precisaremos salvar no Firestore futuramente !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            viewModel.cadastro(email, senha)
+            viewModel.cadastro(nome, email, senha)
         }
 
         binding.btnVoltarLogin.setOnClickListener {

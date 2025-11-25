@@ -35,10 +35,10 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun cadastro(email: String, pass: String) {
+    fun cadastro(nome: String, email: String, pass: String) {
         _isLoading.value = true
         viewModelScope.launch {
-            val result = repository.cadastro(email, pass)
+            val result = repository.cadastro(nome, email, pass)
             _authResult.value = result
             _isLoading.value = false
         }

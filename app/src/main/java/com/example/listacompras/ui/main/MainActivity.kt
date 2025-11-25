@@ -13,7 +13,7 @@ import com.example.listacompras.EspacamentoItens
 import com.example.listacompras.Session
 import com.example.listacompras.data.memory.ListMemory
 import com.example.listacompras.data.model.Lista
-import com.example.listacompras.databinding.ActivityMainBinding // Import do Binding
+import com.example.listacompras.databinding.ActivityMainBinding
 import com.example.listacompras.ui.auth.AuthViewModel
 import com.example.listacompras.ui.lista.AddItemListaActivity
 import com.example.listacompras.ui.lista.AddListaActivity
