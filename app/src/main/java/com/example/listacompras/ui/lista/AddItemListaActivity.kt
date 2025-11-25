@@ -67,7 +67,7 @@ class AddItemListaActivity : AppCompatActivity() {
         binding.rvListas.layoutManager = LinearLayoutManager(this)
         binding.rvListas.adapter = adapter
 
-        // Configuração do Swipe-to-delete (Com seu visual original)
+        // Swipe-to-delete
         val swipeToDelete = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
             override fun onMove(
@@ -78,10 +78,8 @@ class AddItemListaActivity : AppCompatActivity() {
                 val pos = vh.bindingAdapterPosition
                 val itemParaRemover = adapter.getItemAt(pos)
 
-                // 1. Remove usando o ViewModel (Firestore)
                 itemViewModel.deletarItem(itemParaRemover)
 
-                // 2. Snackbar para desfazer
                 Snackbar.make(binding.root, "Item removido da lista", Snackbar.LENGTH_LONG)
                     .setAction("Desfazer") {
                         // Recria o item no Firestore se o usuário desfazer
@@ -101,9 +99,8 @@ class AddItemListaActivity : AppCompatActivity() {
                 super.onChildDraw(c, rv, vh, dX, dY, actionState, isCurrentlyActive)
 
                 val itemView = vh.itemView
-                val paint = Paint().apply { color = Color.parseColor("#F44336") } // Seu vermelho original
+                val paint = Paint().apply { color = Color.parseColor("#F44336") }
 
-                // Seu ícone original (certifique-se que o nome do arquivo no projeto é esse mesmo)
                 val icon = ContextCompat.getDrawable(rv.context, R.drawable.delete_forever_24dp_e3e3e3_fill0_wght400_grad0_opsz24)
 
                 // Desenha o Fundo Vermelho
@@ -133,15 +130,12 @@ class AddItemListaActivity : AppCompatActivity() {
                 }
             }
         }
-
-        // Anexa ao RecyclerView (usando o binding)
         ItemTouchHelper(swipeToDelete).attachToRecyclerView(binding.rvListas)
-
     }
 
     private fun setupObservers() {
         itemViewModel.itens.observe(this) { listaAtualizada ->
-            adapter.updateList(listaAtualizada) // Assumindo que seu Adapter tem esse método
+            adapter.updateList(listaAtualizada)
         }
     }
 
@@ -162,11 +156,9 @@ class AddItemListaActivity : AppCompatActivity() {
                         MaterialAlertDialogBuilder(this)
                             .setTitle("Excluir lista?")
                             .setPositiveButton("Excluir") { _, _ ->
-                                // Precisamos de um objeto Lista com o ID para deletar
-                                // (Idealmente passariamos o objeto inteiro, mas improvisamos aqui)
                                 val listaFake = com.example.listacompras.data.model.Lista(id = idLista)
                                 listaViewModel.excluirLista(listaFake)
-                                finish() // Fecha a tela
+                                finish()
                             }
                             .setNegativeButton("Cancelar", null)
                             .show()
@@ -213,7 +205,7 @@ class AddItemListaActivity : AppCompatActivity() {
             val data = res.data ?: return@registerForActivityResult
             val id = data.getStringExtra("item_id") // ID String
             val nome = data.getStringExtra("nome")
-            // ... recuperar outros campos ...
+            // recuperar outros campos ...
 
             // if (id != null) {
             //    val itemEditado = Item(id = id, listaId = idLista, nome = nome ...)
