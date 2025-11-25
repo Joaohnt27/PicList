@@ -18,7 +18,7 @@ class AuthViewModel : ViewModel() {
     private val _authResult = MutableLiveData<Result<FirebaseUser?>>()
     val authResult: LiveData<Result<FirebaseUser?>> = _authResult
 
-    // LiveData para carregamento (mostrar barra de progresso)
+    // LiveData p/ carregamento (mostrar barra de progresso)
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -42,5 +42,9 @@ class AuthViewModel : ViewModel() {
 
     fun getCurrentUser(): FirebaseUser? {
         return repository.getCurrentUser()
+    }
+
+    fun logout() {
+        repository.logout()
     }
 }

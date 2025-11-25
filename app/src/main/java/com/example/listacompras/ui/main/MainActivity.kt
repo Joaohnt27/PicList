@@ -6,65 +6,80 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.listacompras.ui.lista.AddItemListaActivity
-import com.example.listacompras.ui.lista.AddListaActivity
 import com.example.listacompras.EspacamentoItens
-import com.example.listacompras.ui.lista.ListasAdapter
-import com.example.listacompras.R
 import com.example.listacompras.Session
 import com.example.listacompras.data.memory.ListMemory
 import com.example.listacompras.data.model.Lista
+import com.example.listacompras.databinding.ActivityMainBinding // Import do Binding
+import com.example.listacompras.ui.auth.AuthViewModel
+import com.example.listacompras.ui.lista.AddItemListaActivity
+import com.example.listacompras.ui.lista.AddListaActivity
+import com.example.listacompras.ui.lista.ListasAdapter
 import com.example.listacompras.ui.login.LoginActivity
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.textfield.TextInputEditText
 import java.text.Normalizer
 
 class MainActivity : AppCompatActivity() {
 
+    // Configuração do ViewBinding
+    private lateinit var binding: ActivityMainBinding
+
     private lateinit var adapter: ListasAdapter
     private lateinit var email: String
 
+    private val authViewModel: AuthViewModel by viewModels()
+
     override fun onResume() {
         super.onResume()
-        val listasOrdenadas = ListMemory.get(email).sortedBy { it.titulo.lowercase() }
-        adapter.setItems(listasOrdenadas.toMutableList()) // Atualiza o adapter com as listas mais recentes
-        adapter.notifyDataSetChanged() // Notifica o adapter que a lista foi alterada
+        // Verifica se o email foi inicializado
+        if (::email.isInitialized) {
+            val listasOrdenadas = ListMemory.get(email).sortedBy { it.titulo.lowercase() }
+            adapter.setItems(listasOrdenadas.toMutableList())
+            adapter.notifyDataSetChanged()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         email = Session.userEmail ?: run {
             finish()
             return
         }
 
-        findViewById<MaterialButton>(R.id.btnLogout)
-            .setOnClickListener {
-                MaterialAlertDialogBuilder(this)
-                    .setTitle("Sair da conta?")
-                    .setMessage("Você deseja encerrar a sessão e voltar para a tela de login?")
-                    .setNegativeButton("Cancelar", null)
-                    .setPositiveButton("Sair") { _, _ ->
-                        Session.userEmail = null  // Limpa apenas a sessão
-                        startActivity(Intent(this, LoginActivity::class.java).apply {
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        })
-                    }
-                    .show()
-            }
+        binding.btnLogout.setOnClickListener {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Sair da conta?")
+                .setMessage("Você deseja encerrar a sessão e voltar para a tela de login?")
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Sair") { _, _ ->
 
-        val rv = findViewById<RecyclerView>(R.id.rvListas)
+                    // desloga do Firebase
+                    authViewModel.logout()
+
+                    // limpa a sessão local
+                    Session.userEmail = null
+
+                    // volta p/ o Login e limpa o histórico de telas
+                    startActivity(Intent(this, LoginActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    })
+                }
+                .show()
+        }
+
+        // Configuração da RecyclerView
+        val rv = binding.rvListas
         rv.layoutManager = GridLayoutManager(this, 2)
         rv.addItemDecoration(EspacamentoItens(12))
 
-        val listasOrdenadas = ListMemory.get(email).sortedBy { it.titulo.lowercase() } // ordem alfabéitca
+        val listasOrdenadas = ListMemory.get(email).sortedBy { it.titulo.lowercase() }
         adapter = ListasAdapter(
             listasOrdenadas.toMutableList(),
             onClick = { item ->
@@ -75,12 +90,13 @@ class MainActivity : AppCompatActivity() {
         )
         rv.adapter = adapter
 
-        findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
+        // Botão adicionar nova lista
+        binding.fabAdd.setOnClickListener {
             addListaLauncher.launch(Intent(this, AddListaActivity::class.java))
         }
 
-        val etBusca = findViewById<TextInputEditText>(R.id.etBusca)
-        etBusca.addTextChangedListener(object : TextWatcher {
+        // Campo de busca
+        binding.etBusca.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -90,16 +106,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun persistirDados() {
-        ListMemory.set(email, adapter.currentItems())  // -> Salva a lista no ListMemory
+        if (::email.isInitialized) {
+            ListMemory.set(email, adapter.currentItems())
+        }
     }
 
-    // Normaliza para comparar (sem acento e minúsculas)
     private fun normalizarTxt(s: String): String {
         val n = Normalizer.normalize(s.trim(), Normalizer.Form.NFD)
         return n.replace("\\p{M}+".toRegex(), "").lowercase()
     }
 
-    // Verifica se já existe lista com esse título
     private fun tituloExiste(titulo: String): Boolean {
         val alvo = normalizarTxt(titulo)
         return ListMemory.get(email).any { normalizarTxt(it.titulo) == alvo }
@@ -117,9 +133,8 @@ class MainActivity : AppCompatActivity() {
                 return@registerForActivityResult
             }
 
-            // Adicionando a lista e salvando em memória
             adapter.addItem(Lista(titulo = titulo, imageUri = uri))
-            persistirDados()  // Garante o salvamento das listas em memória
+            persistirDados()
         }
     }
 
@@ -136,9 +151,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Renomeando: $nomeAntigo -> $novoNome", Toast.LENGTH_SHORT).show()
 
             if (editar) {
-                // Atualiza o adapter imediatamente
                 adapter.renameByTitle(nomeAntigo, novoNome, novaUri)
-
                 val ordenadas = adapter.currentItems().sortedBy { it.titulo.lowercase() }
                 adapter.setItems(ordenadas)
                 ListMemory.rename(email, nomeAntigo, novoNome)
