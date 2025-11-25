@@ -2,48 +2,94 @@ package com.example.listacompras.ui.login
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.listacompras.Session
+import com.example.listacompras.databinding.ActivityLoginBinding
+import com.example.listacompras.ui.auth.AuthViewModel // Certifique-se que o pacote está certo
 import com.example.listacompras.ui.cadastro.CadastroActivity
 import com.example.listacompras.ui.main.MainActivity
-import com.example.listacompras.Session
-import com.example.listacompras.data.memory.AuthMemory
-import com.example.listacompras.databinding.ActivityLoginBinding
 import com.google.android.material.snackbar.Snackbar
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var b: ActivityLoginBinding
+    private lateinit var binding: ActivityLoginBinding
+
+    // Implementação do ViewModel
+    private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        b = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(b.root)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        b.btnAcessar.setOnClickListener {
-            val email = b.etEmail.text?.toString().orEmpty()
-            val senha = b.etSenha.text?.toString().orEmpty()
+        // Verifica se já existe usuário logado no Firebase ao abrir o app
+        checkAutoLogin()
+
+        setupListeners()
+        setupObservers()
+    }
+
+    // Função p/ verificar se já existe usuário logado no Firebase
+    private fun checkAutoLogin() {
+        // Se tiver logado no Firebase, pula o login
+        val currentUser = viewModel.getCurrentUser()
+        if (currentUser != null) {
+            goToHome(currentUser.email ?: "")
+        }
+    }
+
+    private fun setupListeners() {
+        binding.btnAcessar.setOnClickListener {
+            val email = binding.etEmail.text?.toString().orEmpty()
+            val senha = binding.etSenha.text?.toString().orEmpty()
 
             if (!email.contains("@")) {
-                b.tilEmail.error = "Informe um e-mail válido"
+                binding.tilEmail.error = "Informe um e-mail válido"
                 return@setOnClickListener
-            } else b.tilEmail.error = null
+            } else binding.tilEmail.error = null
 
             if (senha.isBlank()) {
-                b.tilSenha.error = "Informe a senha"
+                binding.tilSenha.error = "Informe a senha"
                 return@setOnClickListener
-            } else b.tilSenha.error = null
+            } else binding.tilSenha.error = null
 
-            if (AuthMemory.isValid(email, senha)) {
-                Session.userEmail = email          // guarda usuário atual em memória
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
-            } else {
-                Snackbar.make(b.root, "Credenciais inválidas", Snackbar.LENGTH_SHORT).show()
+            // chamada do ViewModel
+            viewModel.login(email, senha)
+        }
+
+        binding.btnCriarConta.setOnClickListener {
+            startActivity(Intent(this, CadastroActivity::class.java))
+        }
+    }
+
+    // Observa a resposta do Firebase (padrão Observer)
+    private fun setupObservers() {
+        viewModel.authResult.observe(this) { result ->
+            result.onSuccess { user ->
+                // Login com sucesso no Firebase
+                goToHome(user?.email ?: "")
+            }
+            result.onFailure { exception ->
+                // Erro no Login
+                val mensagemErro = when(exception.message) {
+                    // Tratar mensagens de erro do firebae (A FAZER) !!!!!!
+                    else -> "Erro ao acessar: ${exception.localizedMessage}"
+                }
+                Snackbar.make(binding.root, mensagemErro, Snackbar.LENGTH_LONG).show()
             }
         }
 
-       b.btnCriarConta.setOnClickListener {
-         startActivity(Intent(this, CadastroActivity::class.java))
+        viewModel.isLoading.observe(this) { isLoading ->
+            // Desabilita o botão de acessar para evitar vários cliques enquanto carrega
+            binding.btnAcessar.isEnabled = !isLoading
+            binding.btnAcessar.text = if (isLoading) "Carregando..." else "Acessar"
         }
+    }
+
+    private fun goToHome(email: String) {
+        Session.userEmail = email
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }
