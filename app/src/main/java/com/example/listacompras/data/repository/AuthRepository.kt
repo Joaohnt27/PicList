@@ -47,7 +47,7 @@ class AuthRepositoryImpl : AuthRepository {
 
     override suspend fun login(email: String, pass: String): Result<FirebaseUser?> {
         return try {
-            val result = auth.createUserWithEmailAndPassword(email, pass).await()
+            val result = auth.signInWithEmailAndPassword(email, pass).await()
             Result.success(result.user)
         } catch (e: Exception) {
             Result.failure(e)
