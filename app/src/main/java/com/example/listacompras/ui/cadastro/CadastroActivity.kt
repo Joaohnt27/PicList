@@ -58,8 +58,6 @@ class CadastroActivity : AppCompatActivity() {
 
             if (!ok) return@setOnClickListener
 
-            // Chamada ao ViewModel (Firebase) -> Obs: Por enquanto o Firebase Auth só salva email/senha.
-            // O "nome" precisaremos salvar no Firestore futuramente !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             viewModel.cadastro(nome, email, senha)
         }
 
