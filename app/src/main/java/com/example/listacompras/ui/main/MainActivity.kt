@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -35,7 +36,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Recarrega do Firebase para garantir atualização ao voltar de outras telas
         if (::email.isInitialized) {
             listaViewModel.buscarListas()
         }
@@ -64,6 +64,13 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("id_lista", item.id)    // ID do Firestore
                 intent.putExtra("nome_lista", item.titulo)
                 startActivity(intent)
+            },
+            onEdit = { lista ->
+                val intent = Intent(this, AddListaActivity::class.java)
+                intent.putExtra("nome_lista", lista.titulo)
+                intent.putExtra("id_lista", lista.id)
+                intent.putExtra("imageUri", lista.imageUri)
+                editarListaLauncher.launch(intent)
             }
         )
         rv.adapter = adapter
@@ -142,17 +149,24 @@ class MainActivity : AppCompatActivity() {
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             val data = result.data ?: return@registerForActivityResult
+
+            val id = data.getStringExtra("id_lista") // Recupera o ID
             val novoNome = data.getStringExtra("titulo") ?: return@registerForActivityResult
             val novaUriString = data.getStringExtra("imageUri")
 
-            // Tenta recuperar o objeto Lista
-            val listaOriginal = data.getSerializableExtra("lista_original") as? Lista
+            if (!id.isNullOrEmpty()) {
+                val listaEditada = Lista(
+                    id = id,
+                    titulo = novoNome,
+                    imageUri = novaUriString,
+                    userId = Session.userEmail ?: ""
+                )
 
-            if (listaOriginal != null) {
-                val listaEditada = listaOriginal.copy(titulo = novoNome)
-                val novaUri = if (novaUriString != null) Uri.parse(novaUriString) else null
+                val novaUri = if (!novaUriString.isNullOrEmpty()) Uri.parse(novaUriString) else null
 
+                // Salva no Firebase
                 listaViewModel.editarLista(listaEditada, novaUri)
+                Toast.makeText(this, "Lista atualizada!", Toast.LENGTH_SHORT).show()
             }
         }
     }

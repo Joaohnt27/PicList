@@ -52,17 +52,24 @@ class AddItemListaActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = ItensAdapter(mutableListOf()) { item ->
-            // Clique no item para editar
-            val intent = Intent(this, AddItemActivity::class.java).apply {
-                putExtra("item_id", item.id)
-                putExtra("item_nome", item.nome)
-                putExtra("item_qtd", item.quantidade)
-                putExtra("item_un", item.unidade)
-                putExtra("item_cat", item.categoria)
+        adapter = ItensAdapter(
+            mutableListOf(),
+
+            onClick = { item ->
+                val intent = Intent(this, AddItemActivity::class.java).apply {
+                    putExtra("item_id", item.id)
+                    putExtra("item_nome", item.nome)
+                    putExtra("item_qtd", item.quantidade)
+                    putExtra("item_un", item.unidade)
+                    putExtra("item_cat", item.categoria)
+                }
+                editItemLauncher.launch(intent)
+            },
+
+            onCheck = { item ->
+                itemViewModel.atualizarItem(item)
             }
-            editItemLauncher.launch(intent)
-        }
+        )
 
         binding.rvListas.layoutManager = LinearLayoutManager(this)
         binding.rvListas.adapter = adapter
