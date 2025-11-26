@@ -114,8 +114,6 @@ class MainActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val texto = s.toString()
-                // ANTES: adapter.filter(texto)
-                // DEPOIS (RF005 - Query no Firestore):
                 listaViewModel.pesquisar(texto)
             }
         })
@@ -126,9 +124,17 @@ class MainActivity : AppCompatActivity() {
         return n.replace("\\p{M}+".toRegex(), "").lowercase()
     }
 
-    private fun tituloExiste(titulo: String): Boolean {
+    private fun tituloExiste(titulo: String, idIgnorar: String? = null): Boolean {
         val alvo = normalizarTxt(titulo)
-        return adapter.currentItems().any { normalizarTxt(it.titulo) == alvo }
+
+        // verifica na lista completa do Adapter
+        return adapter.currentItems().any { itemLista ->
+            // se o id for igual ao que está editando, pula a verificação
+            if (itemLista.id == idIgnorar) return@any false
+
+            // verifica se o nome bate
+            normalizarTxt(itemLista.titulo) == alvo
+        }
     }
 
     private val addListaLauncher = registerForActivityResult(
@@ -139,6 +145,12 @@ class MainActivity : AppCompatActivity() {
             val uriString = result.data?.getStringExtra("imageUri")
 
             val uri = if (!uriString.isNullOrEmpty()) Uri.parse(uriString) else null
+
+            // chama sem id (pq é nova)
+            if (tituloExiste(titulo)) {
+                Toast.makeText(this, "Já existe uma lista com esse nome, jovem!", Toast.LENGTH_SHORT).show()
+                return@registerForActivityResult
+            }
 
             // Manda para o ViewModel salvar no Firebase
             listaViewModel.criarLista(titulo, uri)
@@ -154,6 +166,12 @@ class MainActivity : AppCompatActivity() {
             val id = data.getStringExtra("id_lista")
             val novoNome = data.getStringExtra("titulo") ?: return@registerForActivityResult
             val novaUriString = data.getStringExtra("imageUri")
+
+            // chamando com id pp/ permitir salvar o mesmo nome se for a própria lista
+            if (tituloExiste(novoNome, idIgnorar = id)) {
+                Toast.makeText(this, "Já existe outra lista com esse nome, jovem!", Toast.LENGTH_SHORT).show()
+                return@registerForActivityResult
+            }
 
             if (!id.isNullOrEmpty()) {
                 val currentUserId = authViewModel.getCurrentUser()?.uid ?: ""
