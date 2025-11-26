@@ -21,8 +21,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import android.graphics.Color
 import android.graphics.Paint
+import android.net.Uri
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.example.listacompras.data.model.Lista
 
 
 class AddItemListaActivity : AppCompatActivity() {
@@ -160,6 +162,17 @@ class AddItemListaActivity : AppCompatActivity() {
             popup.menuInflater.inflate(R.menu.option_menu, popup.menu)
             popup.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
+                    R.id.editarLista -> {
+                        val intent = Intent(this, AddListaActivity::class.java)
+
+                        intent.putExtra("nome_lista", nomeLista)
+                        intent.putExtra("id_lista", idLista)
+                        //intent.putExtra("imageUri", imagemAtual)
+
+                        editarListaLauncher.launch(intent)
+
+                        true
+                    }
                     R.id.excluirLista -> {
                         MaterialAlertDialogBuilder(this)
                             .setTitle("Excluir lista?")
@@ -233,6 +246,35 @@ class AddItemListaActivity : AppCompatActivity() {
                 )
                 itemViewModel.atualizarItem(itemEditado)
                 Toast.makeText(this, "Item atualizado, jovem!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private val editarListaLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data ?: return@registerForActivityResult
+
+            val novoNome = data.getStringExtra("titulo")
+            val novaUriString = data.getStringExtra("imageUri")
+
+            if (!novoNome.isNullOrEmpty()) {
+                // cria o objeto com o msm id para o firebase entender que é update
+                val listaEditada = Lista(
+                    id = idLista,
+                    titulo = novoNome,
+                )
+
+                val novaUri = if (!novaUriString.isNullOrEmpty()) Uri.parse(novaUriString) else null
+
+                // chama o ViewModel p/ salvar
+                listaViewModel.editarLista(listaEditada, novaUri)
+
+                // Atualiza o título na tela
+                binding.tvTitulo.text = novoNome
+                // Atualiza a variável local
+                nomeLista = novoNome
+
+                Toast.makeText(this, "Lista atualizada, jovem!", Toast.LENGTH_SHORT).show()
             }
         }
     }

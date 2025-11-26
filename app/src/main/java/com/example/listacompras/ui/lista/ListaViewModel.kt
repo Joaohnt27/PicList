@@ -52,7 +52,10 @@ class ListaViewModel : ViewModel() {
         viewModelScope.launch {
             val result = repository.editarLista(lista, novaUri)
             _status.value = result
-            if (result.isSuccess) buscarListas()
+
+            if (result.isSuccess) {
+                buscarListas()
+            }
             _isLoading.value = false
         }
     }

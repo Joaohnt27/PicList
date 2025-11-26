@@ -150,22 +150,28 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             val data = result.data ?: return@registerForActivityResult
 
-            val id = data.getStringExtra("id_lista") // Recupera o ID
+            val id = data.getStringExtra("id_lista")
             val novoNome = data.getStringExtra("titulo") ?: return@registerForActivityResult
             val novaUriString = data.getStringExtra("imageUri")
 
             if (!id.isNullOrEmpty()) {
+                val currentUserId = authViewModel.getCurrentUser()?.uid ?: ""
+
                 val listaEditada = Lista(
                     id = id,
                     titulo = novoNome,
                     imageUri = novaUriString,
-                    userId = Session.userEmail ?: ""
+                    userId = currentUserId
                 )
 
                 val novaUri = if (!novaUriString.isNullOrEmpty()) Uri.parse(novaUriString) else null
 
-                // Salva no Firebase
+                // salva no firebase
                 listaViewModel.editarLista(listaEditada, novaUri)
+
+                // limpa a busca para garantir que a lista apareça se tiver filtro
+                binding.etBusca.text?.clear()
+
                 Toast.makeText(this, "Lista atualizada!", Toast.LENGTH_SHORT).show()
             }
         }
