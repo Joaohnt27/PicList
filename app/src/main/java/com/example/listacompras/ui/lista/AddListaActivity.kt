@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.example.listacompras.databinding.ActivityAddListaBinding // Import do Binding
+import com.example.listacompras.databinding.ActivityAddListaBinding
 
 class AddListaActivity : AppCompatActivity() {
 
@@ -21,16 +21,13 @@ class AddListaActivity : AppCompatActivity() {
             imageUri = uri
             binding.imgPreview.setImageURI(uri)
 
-            // --- CORREÇÃO IMPORTANTE PARA O FIREBASE STORAGE ---
-            // Isso garante que o app tenha permissão persistente para ler o arquivo
-            // mesmo depois de fechar a galeria. Sem isso, o upload falha silenciosamente.
             try {
+                // funciona sem firebase storage
                 contentResolver.takePersistableUriPermission(
                     uri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
             } catch (e: Exception) {
-                // Algumas galerias não suportam persistência, mas a maioria sim.
                 e.printStackTrace()
             }
         }
@@ -38,13 +35,13 @@ class AddListaActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 1. Configuração do ViewBinding
+        // configuração do ViewBinding
         binding = ActivityAddListaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // Recebe dados para edição (se houver)
         val nomeAtual = intent.getStringExtra("nome_lista")
-        val idLista = intent.getStringExtra("id_lista") // Agora precisamos do ID
+        val idLista = intent.getStringExtra("id_lista")
 
         // Preenche os campos se for edição
         if (!nomeAtual.isNullOrEmpty()) {
@@ -73,7 +70,7 @@ class AddListaActivity : AppCompatActivity() {
 
                 // Dados para controle de edição
                 putExtra("editar", !nomeAtual.isNullOrEmpty())
-                putExtra("id_lista", idLista) // Devolvemos o ID para o ViewModel saber quem atualizar
+                putExtra("id_lista", idLista)
                 putExtra("nome_antigo", nomeAtual)
             }
 

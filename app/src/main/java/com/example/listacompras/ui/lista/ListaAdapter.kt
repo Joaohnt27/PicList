@@ -26,13 +26,14 @@ class ListasAdapter(
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = itens[position]
 
-        // Texto via Binding
         holder.binding.tvTitulo.text = item.titulo
 
         if (!item.imageUri.isNullOrEmpty()) {
-            // carrega tanto Uri local quanto URL do firebase
+            // Convertendo a String "content://..." para um objeto uri real.
+            val uri = android.net.Uri.parse(item.imageUri)
+
             Glide.with(holder.itemView.context)
-                .load(item.imageUri)
+                .load(uri) // Carrega o objeto Uri
                 .centerCrop()
                 .placeholder(R.drawable.placeholderimg)
                 .error(R.drawable.placeholderimg)
