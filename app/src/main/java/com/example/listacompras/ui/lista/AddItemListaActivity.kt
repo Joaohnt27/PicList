@@ -21,6 +21,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import android.graphics.Color
 import android.graphics.Paint
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 
 
@@ -213,14 +214,26 @@ class AddItemListaActivity : AppCompatActivity() {
     private val editItemLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
         if (res.resultCode == RESULT_OK) {
             val data = res.data ?: return@registerForActivityResult
-            val id = data.getStringExtra("item_id") // ID String
-            val nome = data.getStringExtra("nome")
-            // recuperar outros campos ...
 
-            // if (id != null) {
-            //    val itemEditado = Item(id = id, listaId = idLista, nome = nome ...)
-            //    itemViewModel.atualizarItem(itemEditado)
-            // }
+            val id = data.getStringExtra("item_id")
+            val nome = data.getStringExtra("nome")
+            val qtd = data.getIntExtra("quantidade", 1)
+            val un = data.getStringExtra("unidade") ?: "un"
+            val cat = data.getStringExtra("categoria") ?: "Outros"
+
+            if (!id.isNullOrEmpty() && !nome.isNullOrEmpty()) {
+                val itemEditado = Item(
+                    id = id,
+                    listaId = idLista,
+                    nome = nome,
+                    quantidade = qtd,
+                    unidade = un,
+                    categoria = cat,
+                    marcado = false // Mantém desmarcado ao editar item
+                )
+                itemViewModel.atualizarItem(itemEditado)
+                Toast.makeText(this, "Item atualizado, jovem!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
