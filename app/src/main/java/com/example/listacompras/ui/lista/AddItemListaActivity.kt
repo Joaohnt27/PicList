@@ -25,6 +25,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.listacompras.data.model.Lista
+import com.example.listacompras.ui.auth.AuthViewModel
 
 
 class AddItemListaActivity : AppCompatActivity() {
@@ -32,10 +33,12 @@ class AddItemListaActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddItemListaBinding
     private val itemViewModel: ItemViewModel by viewModels()
     private val listaViewModel: ListaViewModel by viewModels()
+    private val authViewModel: AuthViewModel by viewModels()
 
     private lateinit var adapter: ItensAdapter
     private var idLista: String = ""
     private var nomeLista: String = ""
+    private var imagemLista: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +47,8 @@ class AddItemListaActivity : AppCompatActivity() {
 
         idLista = intent.getStringExtra("id_lista") ?: ""
         nomeLista = intent.getStringExtra("nome_lista") ?: ""
+        imagemLista = intent.getStringExtra("img_lista")
+
         binding.tvTitulo.text = nomeLista
 
         setupRecyclerView()
@@ -167,7 +172,7 @@ class AddItemListaActivity : AppCompatActivity() {
 
                         intent.putExtra("nome_lista", nomeLista)
                         intent.putExtra("id_lista", idLista)
-                        //intent.putExtra("imageUri", imagemAtual)
+                        intent.putExtra("imageUri", imagemLista)
 
                         editarListaLauncher.launch(intent)
 
@@ -258,10 +263,13 @@ class AddItemListaActivity : AppCompatActivity() {
             val novaUriString = data.getStringExtra("imageUri")
 
             if (!novoNome.isNullOrEmpty()) {
+                val currentUserId = authViewModel.getCurrentUser()?.uid ?: ""
+
                 // cria o objeto com o msm id para o firebase entender que é update
                 val listaEditada = Lista(
                     id = idLista,
                     titulo = novoNome,
+                    userId = currentUserId,
                 )
 
                 val novaUri = if (!novaUriString.isNullOrEmpty()) Uri.parse(novaUriString) else null

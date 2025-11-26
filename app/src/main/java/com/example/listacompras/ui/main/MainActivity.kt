@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this, AddItemListaActivity::class.java)
                 intent.putExtra("id_lista", item.id)    // ID do Firestore
                 intent.putExtra("nome_lista", item.titulo)
+                intent.putExtra("img_lista", item.imageUri)
                 startActivity(intent)
             },
             onEdit = { lista ->
