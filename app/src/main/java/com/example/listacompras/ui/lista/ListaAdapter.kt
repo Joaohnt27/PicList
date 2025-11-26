@@ -64,14 +64,14 @@ class ListasAdapter(
 
     fun addItem(item: Lista) {
         full.add(0, item)
-        full.sortBy { it.titulo.lowercase() }
-        filter("")
+        itens.sortBy { it.titulo_lower.lowercase() }
+        notifyDataSetChanged()
     }
 
     fun setItems(novas: List<Lista>) {
-        full.clear()
-        full.addAll(novas)
-        filter("")
+        itens.clear()
+        itens.addAll(novas)
+        notifyDataSetChanged()
     }
 
     fun renameByTitle(oldTitle: String, newTitle: String, newImageUri: String? = null) {

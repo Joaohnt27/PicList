@@ -31,7 +31,8 @@ class ListaRepositoryImpl : ListaRepository {
             val novaLista = lista.copy(
                 id = docRef.id,
                 userId = user.uid,
-                imageUri = caminhoLocalImagem // Salva o caminho local
+                imageUri = caminhoLocalImagem, // Salva o caminho local
+                titulo_lower = lista.titulo.lowercase()
             )
 
             docRef.set(novaLista).await()
@@ -103,10 +104,12 @@ class ListaRepositoryImpl : ListaRepository {
         return try {
             val user = auth.currentUser ?: throw Exception("Usuário Off")
 
+            val queryNormalizada = query.lowercase()
+
             val snapshot = db.collection(collectionName)
                 .whereEqualTo("userId", user.uid)
-                .whereGreaterThanOrEqualTo("titulo", query)
-                .whereLessThanOrEqualTo("titulo", query + "\uf8ff")
+                .whereGreaterThanOrEqualTo("titulo_lower", queryNormalizada)
+                .whereLessThanOrEqualTo("titulo_lower", queryNormalizada + "\uf8ff")
                 .get()
                 .await()
 
