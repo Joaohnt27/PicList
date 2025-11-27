@@ -23,6 +23,10 @@ class ListaViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    init {
+        buscarListas()
+    }
+
     fun buscarListas() {
         _isLoading.value = true
         viewModelScope.launch {
