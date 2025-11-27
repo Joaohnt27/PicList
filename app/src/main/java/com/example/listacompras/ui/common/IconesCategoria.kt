@@ -1,4 +1,4 @@
-package com.example.listacompras
+package com.example.listacompras.ui.common
 
 import com.example.listacompras.R
 

@@ -10,8 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.listacompras.EspacamentoItens
-import com.example.listacompras.Session
+import com.example.listacompras.ui.common.EspacamentoItens
 import com.example.listacompras.data.model.Lista
 import com.example.listacompras.databinding.ActivityMainBinding
 import com.example.listacompras.ui.auth.AuthViewModel
@@ -47,10 +46,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        email = Session.userEmail ?: run {
-            finish()
-            return
-        }
+
 
         val rv = binding.rvListas
         rv.layoutManager = GridLayoutManager(this, 2)
@@ -94,7 +90,6 @@ class MainActivity : AppCompatActivity() {
                 .setNegativeButton("Cancelar", null)
                 .setPositiveButton("Sair") { _, _ ->
                     authViewModel.logout()
-                    Session.userEmail = null
                     startActivity(Intent(this, LoginActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     })

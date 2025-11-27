@@ -6,7 +6,6 @@ import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.listacompras.Session
 import com.example.listacompras.databinding.ActivityCadastroBinding
 import com.example.listacompras.ui.auth.AuthViewModel
 import com.example.listacompras.ui.main.MainActivity
@@ -71,9 +70,6 @@ class CadastroActivity : AppCompatActivity() {
         viewModel.authResult.observe(this) { result ->
             result.onSuccess { user ->
                 Toast.makeText(this, "Conta criada com sucesso, jovem! ;)", Toast.LENGTH_SHORT).show()
-
-                // Salva sessão localmente
-                Session.userEmail = user?.email
 
                 // No Firebase, criar conta já faz o login automático (vai direto p/ main).
                 val intent = Intent(this, MainActivity::class.java)

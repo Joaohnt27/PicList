@@ -6,7 +6,6 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.listacompras.Session
 import com.example.listacompras.databinding.ActivityLoginBinding
 import com.example.listacompras.ui.auth.AuthViewModel // Certifique-se que o pacote está certo
 import com.example.listacompras.ui.cadastro.CadastroActivity
@@ -139,7 +138,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun goToHome(email: String) {
-        Session.userEmail = email
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }

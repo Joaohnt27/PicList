@@ -85,14 +85,17 @@ class ListaRepositoryImpl : ListaRepository {
 
     override suspend fun editarLista(lista: Lista, novaImageUri: Uri?): Result<Boolean> {
         return try {
-            var listaAtualizada = lista
+            // 1. Cria uma cópia garantindo que o titulo_lower acompanhe o titulo novo
+            var listaAtualizada = lista.copy(
+                titulo_lower = lista.titulo.lowercase() // <--- A CORREÇÃO MÁGICA É ESSA LINHA
+            )
 
-            // Se o usuário escolheu uma nova imagem
+            // 2. Se tiver imagem nova, atualiza também
             if (novaImageUri != null) {
-                // Apenas atualiza o caminho local
-                listaAtualizada = lista.copy(imageUri = novaImageUri.toString())
+                listaAtualizada = listaAtualizada.copy(imageUri = novaImageUri.toString())
             }
 
+            // 3. Salva no banco
             db.collection(collectionName).document(lista.id).set(listaAtualizada).await()
             Result.success(true)
         } catch (e: Exception) {

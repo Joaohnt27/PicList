@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.listacompras.databinding.ActivityAddItemBinding // Import do Binding
+import com.example.listacompras.databinding.ActivityAddItemBinding
 
 class AddItemActivity : AppCompatActivity() {
 
@@ -77,6 +77,7 @@ class AddItemActivity : AppCompatActivity() {
             val data = Intent().apply {
                 putExtra("item_id", itemId)
                 putExtra("nome", nome)
+                putExtra("nome_lower", nome.lowercase())
                 putExtra("quantidade", quantidade)
                 putExtra("unidade", unidade)
                 putExtra("categoria", categoria)

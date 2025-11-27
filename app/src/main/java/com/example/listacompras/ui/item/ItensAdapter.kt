@@ -1,4 +1,4 @@
-package com.example.listacompras
+package com.example.listacompras.ui.item
 
 import android.graphics.Color
 import android.graphics.Paint
@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.listacompras.ui.common.IconesCategoria
 import com.example.listacompras.data.model.Item
 import com.example.listacompras.databinding.ItemItemBinding
 
@@ -15,8 +16,6 @@ class ItensAdapter(
     private val onCheck: (Item) -> Unit
 ) : RecyclerView.Adapter<ItensAdapter.VH>() {
 
-    private var filteredItens = itens.toMutableList()
-
     inner class VH(val binding: ItemItemBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -24,33 +23,30 @@ class ItensAdapter(
         return VH(binding)
     }
 
-    override fun getItemCount(): Int = filteredItens.size
+    override fun getItemCount(): Int = itens.size
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val item = filteredItens[position]
+        val item = itens[position]
 
         holder.binding.tvNomeItem.text = item.nome
         holder.binding.tvDetalhe.text = "${item.quantidade} ${item.unidade}"
         holder.binding.imgCategoria.setImageResource(IconesCategoria.iconFor(item.categoria))
 
+        // Limpa listener para evitar loops
         holder.binding.cb.setOnCheckedChangeListener(null)
         holder.binding.cb.isChecked = item.marcado
+
+        // Aplicaa estilos visual
         applyCheckedStyle(holder, item.marcado)
 
-        // Configura o clique do Checkbox
         holder.binding.cb.setOnCheckedChangeListener { _, checked ->
             item.marcado = checked
+            applyCheckedStyle(holder, checked)
 
-            // Chama a função que salva no Firebase
             onCheck(item)
 
-            // Aplica o visual
             if (checked) {
-                moverItemFimLista(position)
-                applyCheckedStyle(holder, true)
                 Toast.makeText(holder.itemView.context, "Item riscado!", Toast.LENGTH_SHORT).show()
-            } else {
-                applyCheckedStyle(holder, false)
             }
         }
 
@@ -64,25 +60,6 @@ class ItensAdapter(
     fun updateList(novaLista: List<Item>) {
         itens.clear()
         itens.addAll(novaLista)
-        filteredItens.clear()
-        filteredItens.addAll(novaLista)
-        notifyDataSetChanged()
-    }
-
-    private fun moverItemFimLista(position: Int) {
-        if (position < 0 || position >= filteredItens.size) return
-        val item = filteredItens[position]
-        filteredItens.removeAt(position)
-        filteredItens.add(item)
-
-        // Reordena visualmente
-        val checkedItems = filteredItens.filter { it.marcado }
-        val uncheckedItems = filteredItens.filterNot { it.marcado }
-        val grouped = checkedItems.groupBy { it.categoria }
-        val sortedGrouped = grouped.flatMap { it.value.sortedBy { i -> i.nome } }
-
-        filteredItens.clear()
-        filteredItens.addAll(uncheckedItems + sortedGrouped)
         notifyDataSetChanged()
     }
 
@@ -90,31 +67,20 @@ class ItensAdapter(
         if (checked) {
             holder.binding.root.setCardBackgroundColor(Color.parseColor("#F3F3F3"))
             holder.binding.tvNomeItem.paintFlags = holder.binding.tvNomeItem.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            holder.binding.root.alpha = 0.6f
         } else {
             holder.binding.root.setCardBackgroundColor(Color.WHITE)
             holder.binding.tvNomeItem.paintFlags = holder.binding.tvNomeItem.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            holder.binding.root.alpha = 1.0f
         }
     }
+
+    fun getItemAt(position: Int): Item = itens[position]
 
     fun removeAt(position: Int) {
-        if (position >= 0 && position < filteredItens.size) {
-            val item = filteredItens[position]
-            filteredItens.removeAt(position)
-            itens.remove(item)
+        if (position in itens.indices) {
+            itens.removeAt(position)
             notifyItemRemoved(position)
         }
-    }
-
-    fun getItemAt(position: Int): Item = filteredItens[position]
-
-    fun filter(query: String) {
-        filteredItens = if (query.isEmpty()) {
-            itens.toMutableList()
-        } else {
-            itens.filter {
-                it.nome.contains(query, true) || it.categoria.contains(query, true)
-            }.toMutableList()
-        }
-        notifyDataSetChanged()
     }
 }

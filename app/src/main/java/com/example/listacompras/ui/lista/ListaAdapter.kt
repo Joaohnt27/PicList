@@ -75,20 +75,20 @@ class ListasAdapter(
     }
 
     fun renameByTitle(oldTitle: String, newTitle: String, newImageUri: String? = null) {
-        val idxFull = full.indexOfFirst { it.titulo == oldTitle }
+        val idxFull = full.indexOfFirst { it.titulo_lower == oldTitle }
         if (idxFull >= 0) {
             val antigo = full[idxFull]
             full[idxFull] = antigo.copy(
-                titulo = newTitle,
+                titulo_lower = newTitle,
                 imageUri = newImageUri ?: antigo.imageUri
             )
         }
 
-        val idxShown = itens.indexOfFirst { it.titulo == oldTitle }
+        val idxShown = itens.indexOfFirst { it.titulo_lower == oldTitle }
         if (idxShown >= 0) {
             val antigo = itens[idxShown]
             itens[idxShown] = antigo.copy(
-                titulo = newTitle,
+                titulo_lower = newTitle,
                 imageUri = newImageUri ?: antigo.imageUri
             )
             notifyItemChanged(idxShown)

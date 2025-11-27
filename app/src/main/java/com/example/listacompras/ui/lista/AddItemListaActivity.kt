@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.listacompras.ItensAdapter
+import com.example.listacompras.ui.item.ItensAdapter
 import com.example.listacompras.R
 import com.example.listacompras.data.model.Item
 import com.example.listacompras.databinding.ActivityAddItemListaBinding

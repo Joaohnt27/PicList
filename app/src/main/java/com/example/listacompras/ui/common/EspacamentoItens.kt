@@ -1,4 +1,4 @@
-package com.example.listacompras
+package com.example.listacompras.ui.common
 
 import android.graphics.Rect
 import android.view.View
