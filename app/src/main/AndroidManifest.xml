@@ -11,18 +11,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ListaCompras">
-        <activity android:name=".ui.cadastro.CadastroActivity"/>
-        <activity android:name=".ui.lista.AddListaActivity"/>
-        <activity android:name=".ui.item.AddItemActivity"/>
-        <activity android:name=".ui.lista.AddItemListaActivity"/>
-        <activity android:name=".ui.login.LoginActivity"
+        <activity android:name=".auth.ui.CadastroActivity"/>
+        <activity android:name=".lista.ui.AddListaActivity"/>
+        <activity android:name=".item.ui.AddItemActivity"/>
+        <activity android:name=".lista.ui.AddItemListaActivity"/>
+        <activity android:name=".auth.ui.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ui.main.MainActivity"/>
+        <activity android:name=".main.ui.MainActivity"/>
     </application>
 
 </manifest>
