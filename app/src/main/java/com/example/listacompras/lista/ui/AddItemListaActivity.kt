@@ -151,6 +151,16 @@ class AddItemListaActivity : AppCompatActivity() {
         itemViewModel.itens.observe(this) { listaAtualizada ->
             adapter.updateList(listaAtualizada)
         }
+
+        listaViewModel.status.observe(this) { result ->
+            result.onSuccess {
+                Toast.makeText(this, "Lista excluída!", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+            result.onFailure {
+                Toast.makeText(this, "Erro ao excluir.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun setupListeners() {
@@ -183,7 +193,6 @@ class AddItemListaActivity : AppCompatActivity() {
                             .setPositiveButton("Excluir") { _, _ ->
                                 val listaFake = Lista(id = idLista)
                                 listaViewModel.excluirLista(listaFake)
-                                finish()
                             }
                             .setNegativeButton("Cancelar", null)
                             .show()

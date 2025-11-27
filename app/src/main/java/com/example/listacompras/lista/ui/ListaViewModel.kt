@@ -65,11 +65,16 @@ class ListaViewModel : ViewModel() {
     }
 
     fun excluirLista(lista: Lista) {
+        _isLoading.value = true
         viewModelScope.launch {
             val result = repository.excluirLista(lista)
+
+            _status.value = result
+
             if (result.isSuccess) {
-                buscarListas() // Atualiza a tela removendo o item
+                buscarListas()
             }
+            _isLoading.value = false
         }
     }
 

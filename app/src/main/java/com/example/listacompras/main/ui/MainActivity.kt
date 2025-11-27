@@ -24,40 +24,43 @@ import java.text.Normalizer
 
 class MainActivity : AppCompatActivity() {
 
-    // Configuração do ViewBinding
     private lateinit var binding: ActivityMainBinding
-
     private lateinit var adapter: ListasAdapter
-    private lateinit var email: String
 
+    // ViewModels
     private val authViewModel: AuthViewModel by viewModels()
     private val listaViewModel: ListaViewModel by viewModels()
 
+    // Sempre que a tela aparecer (voltar da exclusão/edição), busca os dados
     override fun onResume() {
         super.onResume()
-        if (::email.isInitialized) {
+        // Se o usuário estiver logado, atualiza a lista
+        if (authViewModel.getCurrentUser() != null) {
             listaViewModel.buscarListas()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
+        val currentUser = authViewModel.getCurrentUser()
+        if (currentUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
 
         val rv = binding.rvListas
         rv.layoutManager = GridLayoutManager(this, 2)
         rv.addItemDecoration(EspacamentoItens(12))
 
-        // Inicializa o adapter vazio
         adapter = ListasAdapter(
             mutableListOf(),
             onClick = { item ->
                 val intent = Intent(this, AddItemListaActivity::class.java)
-                intent.putExtra("id_lista", item.id)    // ID do Firestore
+                intent.putExtra("id_lista", item.id)
                 intent.putExtra("nome_lista", item.titulo)
                 intent.putExtra("img_lista", item.imageUri)
                 startActivity(intent)
@@ -72,13 +75,11 @@ class MainActivity : AppCompatActivity() {
         )
         rv.adapter = adapter
 
-        // quando o Firebase devolver dados, atualiza a tela
         listaViewModel.listas.observe(this) { listas ->
             adapter.setItems(listas.toMutableList())
             adapter.notifyDataSetChanged()
         }
 
-        // Feedback visual de carregamento
         listaViewModel.isLoading.observe(this) { isLoading ->
             binding.rvListas.alpha = if (isLoading) 0.5f else 1.0f
         }
@@ -86,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnLogout.setOnClickListener {
             MaterialAlertDialogBuilder(this)
                 .setTitle("Sair da conta?")
-                .setMessage("Você deseja encerrar a sessão e voltar para a tela de login?")
+                .setMessage("Você deseja encerrar a sessão?")
                 .setNegativeButton("Cancelar", null)
                 .setPositiveButton("Sair") { _, _ ->
                     authViewModel.logout()
@@ -97,19 +98,15 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
 
-        // Botão adicionar nova lista
         binding.fabAdd.setOnClickListener {
             addListaLauncher.launch(Intent(this, AddListaActivity::class.java))
         }
 
-        // Campo de busca
         binding.etBusca.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val texto = s.toString()
-                listaViewModel.pesquisar(texto)
+                listaViewModel.pesquisar(s.toString())
             }
         })
     }
@@ -121,13 +118,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun tituloExiste(titulo: String, idIgnorar: String? = null): Boolean {
         val alvo = normalizarTxt(titulo)
-
-        // verifica na lista completa do Adapter
         return adapter.currentItems().any { itemLista ->
-            // se o id for igual ao que está editando, pula a verificação
             if (itemLista.id == idIgnorar) return@any false
-
-            // verifica se o nome bate
             normalizarTxt(itemLista.titulo) == alvo
         }
     }
@@ -138,16 +130,13 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             val titulo = result.data?.getStringExtra("titulo") ?: return@registerForActivityResult
             val uriString = result.data?.getStringExtra("imageUri")
-
             val uri = if (!uriString.isNullOrEmpty()) Uri.parse(uriString) else null
 
-            // chama sem id (pq é nova)
             if (tituloExiste(titulo)) {
                 Toast.makeText(this, "Já existe uma lista com esse nome, jovem!", Toast.LENGTH_SHORT).show()
                 return@registerForActivityResult
             }
 
-            // Manda para o ViewModel salvar no Firebase
             listaViewModel.criarLista(titulo, uri)
         }
     }
@@ -162,13 +151,13 @@ class MainActivity : AppCompatActivity() {
             val novoNome = data.getStringExtra("titulo") ?: return@registerForActivityResult
             val novaUriString = data.getStringExtra("imageUri")
 
-            // chamando com id pp/ permitir salvar o mesmo nome se for a própria lista
             if (tituloExiste(novoNome, idIgnorar = id)) {
                 Toast.makeText(this, "Já existe outra lista com esse nome, jovem!", Toast.LENGTH_SHORT).show()
                 return@registerForActivityResult
             }
 
             if (!id.isNullOrEmpty()) {
+                // Recupera o ID do usuário direto do Auth (Segurança)
                 val currentUserId = authViewModel.getCurrentUser()?.uid ?: ""
 
                 val listaEditada = Lista(
@@ -180,11 +169,8 @@ class MainActivity : AppCompatActivity() {
 
                 val novaUri = if (!novaUriString.isNullOrEmpty()) Uri.parse(novaUriString) else null
 
-                // salva no firebase
                 listaViewModel.editarLista(listaEditada, novaUri)
-
-                // limpa a busca para garantir que a lista apareça se tiver filtro
-                binding.etBusca.text?.clear()
+                binding.etBusca.text?.clear() // Limpa busca p/ ver a lista editada
 
                 Toast.makeText(this, "Lista atualizada!", Toast.LENGTH_SHORT).show()
             }
