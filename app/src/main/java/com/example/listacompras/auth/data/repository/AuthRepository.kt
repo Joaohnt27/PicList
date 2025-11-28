@@ -1,12 +1,8 @@
-package com.example.listacompras.auth.data.repository
-
+import com.example.listacompras.auth.data.datasource.AuthDataSource
+import com.example.listacompras.auth.data.datasource.AuthFirebaseDataSource
 import com.example.listacompras.auth.data.model.Usuario
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
 
-// O contrato (O QUE fazer)
 interface AuthRepository {
     suspend fun login(email: String, pass: String): Result<Usuario?>
     suspend fun cadastro(nome: String, email: String, pass: String): Result<Usuario?>
@@ -15,73 +11,73 @@ interface AuthRepository {
     suspend fun recuperarSenha(email: String): Result<Boolean>
 }
 
-// O COMO fazer
-class AuthRepositoryImpl : AuthRepository {
 
-    private val auth = FirebaseAuth.getInstance()
-    private val db = FirebaseFirestore.getInstance()
+class AuthRepositoryImpl(
+    private val dataSource: AuthDataSource = AuthFirebaseDataSource()
+) : AuthRepository {
 
     override suspend fun cadastro(nome: String, email: String, pass: String): Result<Usuario?> {
-        return try {
-            val authResult = auth.createUserWithEmailAndPassword(email, pass).await()
-            val firebaseUser = authResult.user
+        val authResult = dataSource.createAccount(nome, email, pass)
 
-            val usuario = firebaseUser?.let { user ->
-                val novoUsuario = Usuario(
-                    id = user.uid,
-                    nome = nome,
-                    email = email
-                )
+        return authResult.fold(
+            onSuccess = { firebaseUser ->
+                val uid = firebaseUser?.uid
+                if (uid != null) {
+                    val saveResult = dataSource.saveUserToFirestore(uid, nome, email)
 
-                db.collection("usuarios")
-                    .document(user.uid)
-                    .set(novoUsuario)
-                    .await()
-
-                novoUsuario
+                    return if (saveResult.isSuccess) {
+                        val novoUsuario = Usuario(id = uid, nome = nome, email = email)
+                        Result.success(novoUsuario)
+                    } else {
+                        Result.failure(saveResult.exceptionOrNull() ?: Exception("Erro ao salvar dados do usuário."))
+                    }
+                } else {
+                    Result.success(null)
+                }
+            },
+            onFailure = { error ->
+                Result.failure(error)
             }
-
-            Result.success(usuario)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        )
     }
 
     override suspend fun login(email: String, pass: String): Result<Usuario?> {
-        return try {
-            val result = auth.signInWithEmailAndPassword(email, pass).await()
-            val firebaseUser = result.user ?: return Result.success(null)
+        val authResult = dataSource.signIn(email, pass)
 
-            // tenta buscar dados no Firestore
-            val doc = db.collection("usuarios").document(firebaseUser.uid).get().await()
+        return authResult.fold(
+            onSuccess = { firebaseUser ->
+                val uid = firebaseUser?.uid
+                if (uid != null) {
+                    val firestoreResult = dataSource.getUserFromFirestore(uid)
 
-            val usuario = if (doc.exists()) {
-                doc.toObject(Usuario::class.java)
-            } else {
-                // fallback se não tiver documento (só do Auth)
-                Usuario(id = firebaseUser.uid, nome = firebaseUser.displayName ?: "", email = firebaseUser.email ?: email)
+                    firestoreResult.fold(
+                        onSuccess = { usuario ->
+                            val finalUser = usuario ?: Usuario(
+                                id = uid,
+                                nome = firebaseUser.displayName ?: "",
+                                email = firebaseUser.email ?: email
+                            )
+                            Result.success(finalUser)
+                        },
+                        onFailure = { error ->
+                            Result.failure(error)
+                        }
+                    )
+                } else {
+                    Result.success(null)
+                }
+            },
+            onFailure = { error ->
+                Result.failure(error)
             }
-
-            Result.success(usuario)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-
-    override fun logout() {
-        auth.signOut()
+        )
     }
 
-    override fun getCurrentUser(): FirebaseUser? {
-        return auth.currentUser
-    }
+    override fun logout() = dataSource.signOut()
+
+    override fun getCurrentUser() = dataSource.getCurrentUser()
+
     override suspend fun recuperarSenha(email: String): Result<Boolean> {
-        return try {
-            // O Firebase envia o email automaticamente
-            auth.sendPasswordResetEmail(email).await()
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        return dataSource.sendPasswordResetEmail(email)
     }
 }

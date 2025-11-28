@@ -1,12 +1,12 @@
 package com.example.listacompras.auth.ui
 
+import AuthRepository
+import AuthRepositoryImpl
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.listacompras.auth.data.model.Usuario
-import com.example.listacompras.auth.data.repository.AuthRepository
-import com.example.listacompras.auth.data.repository.AuthRepositoryImpl
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.launch
 
