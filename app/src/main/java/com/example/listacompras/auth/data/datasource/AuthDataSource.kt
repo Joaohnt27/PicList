@@ -3,6 +3,7 @@ package com.example.listacompras.auth.data.datasource
 import com.example.listacompras.auth.data.model.Usuario
 import com.google.firebase.auth.FirebaseUser
 
+//O QUE deve fazer
 interface AuthDataSource {
     suspend fun createAccount(nome: String, email: String, pass: String): Result<FirebaseUser?>
     suspend fun saveUserToFirestore(uid: String, nome: String, email: String): Result<Unit>

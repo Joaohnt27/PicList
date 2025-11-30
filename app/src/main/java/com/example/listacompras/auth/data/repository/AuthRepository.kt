@@ -3,6 +3,7 @@ import com.example.listacompras.auth.data.datasource.AuthFirebaseDataSource
 import com.example.listacompras.auth.data.model.Usuario
 import com.google.firebase.auth.FirebaseUser
 
+//O QUE deve fazer
 interface AuthRepository {
     suspend fun login(email: String, pass: String): Result<Usuario?>
     suspend fun cadastro(nome: String, email: String, pass: String): Result<Usuario?>
@@ -11,8 +12,8 @@ interface AuthRepository {
     suspend fun recuperarSenha(email: String): Result<Boolean>
 }
 
-
-class AuthRepositoryImpl(
+//COMO deve fazer
+class AuthRepositoryImpl (
     private val dataSource: AuthDataSource = AuthFirebaseDataSource()
 ) : AuthRepository {
 

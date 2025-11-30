@@ -6,7 +6,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-
+//COMO deve fazer
 class AuthFirebaseDataSource : AuthDataSource {
 
     private val auth = FirebaseAuth.getInstance()

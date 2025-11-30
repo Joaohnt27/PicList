@@ -24,7 +24,7 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Verifica se já existe usuário logado no Firebase ao abrir o app
+        // Verifica se já existe usuário logado no Firebase ao abrir o app1
         checkAutoLogin()
 
         setupListeners()
