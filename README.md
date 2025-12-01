@@ -1,38 +1,78 @@
-# 🟢 **PicList** 🛒
+# 🟢 **PicList** 🛒  
+Aplicativo de **Lista de Compras** desenvolvido em **Android Nativo com Kotlin**, seguindo rigorosamente a arquitetura **MVVM**, o padrão **Repository**, e utilizando os serviços **Firebase Authentication**, **Firestore** e **Storage** para autenticação e persistência em nuvem.
 
-**PicList** é um aplicativo de **Lista de Compras** desenvolvido para **Android Nativo** utilizando **Kotlin**. O objetivo é proporcionar uma maneira fácil e prática de criar e gerenciar listas de compras, com funcionalidades como login, cadastro de usuários, e a capacidade de adicionar, editar e remover itens nas listas.
+O PicList permite ao usuário criar, gerenciar e organizar listas de compras de forma simples e prática, incluindo cadastro, login, criação de listas e gerenciamento de itens.
 
-## 📜 **Membros do Projeto**
-- **Arthur Vital Fontana (839832)** - **[[@LuckR4y](https://github.com/LuckR4y)]**
-- **João Henrique Nazar Tavares (839463)** - **[[@Joaohnt27](https://github.com/Joaohnt27)]**
-- **Rafael Mele Porto (840897)** - **[[@DevRigby](https://github.com/DevRigby)]**
+---
+
+## 👥 **Membros do Projeto**
+- **Arthur Vital Fontana (839832)** — [@LuckR4y](https://github.com/LuckR4y)  
+- **João Henrique Nazar Tavares (839463)** — [@Joaohnt27](https://github.com/Joaohnt27)  
+- **Rafael Mele Porto (840897)** — [@DevRigby](https://github.com/DevRigby)
+
+---
 
 ## 👨‍🏫 **Orientação**
-O projeto foi orientado pelo **Professor Bruno de Azevedo Mendonça** - **[[@bmendoncaunaerp](https://github.com/bmendoncaunaerp).]** <br>
-Você pode conferir mais sobre ele no <a href="https://www.linkedin.com/in/brunoazevedomendonca" target="_blank">LinkedIn</a>.
+Projeto orientado pelo **Professor Bruno de Azevedo Mendonça** — [@bmendoncaunaerp](https://github.com/bmendoncaunaerp).  
+Confira também o perfil dele no [LinkedIn](https://www.linkedin.com/in/brunoazevedomendonca).
 
+---
 
-## ⚙️ **Funcionalidades**
-- **Login / Logout:** Validação de e-mail e campos obrigatórios. Botões para login e cadastro de novo usuário.
-- **Cadastro de Usuário:** Cadastro de novos usuários com validação de nome, e-mail, senha e confirmação de senha.
-- **Gestão de Listas de Compras:** Criação, edição, listagem e exclusão de listas de compras, com título e imagem (opcional).
-- **Gestão de Itens da Lista:** Adicionar, editar, listar e remover itens nas listas, com nome, quantidade, unidade e categoria. Marque os itens como comprados!
-- **Busca:** Pesquisa por listas de compras e itens dentro delas, facilitando a organização.
+# ⚙️ **Funcionalidades Implementadas**  
+Todas as funcionalidades pedidas no enunciado oficial foram atendidas (RF001–RF005).
 
-## 💻 **Tecnologias Utilizadas**
-- **Android Nativo** com **Kotlin**
-- **ViewBinding** para manipulação de dados dinâmicos
-- **Material Design** para uma interface moderna e fluida
+### 🔐 **Autenticação – Firebase Authentication**
+- Login, Logout e Recuperação de Senha 
+- Cadastro de Usuário usando Firebase Authentication e Firestore 
+- Validações de campos e mensagens adequadas para erros do Firebase  
 
-## 📝 **Requisitos**
-### Funcionais
-- **RF001**: Tela de Login com validação de e-mail e campos.
-- **RF002**: Cadastro de novos usuários com validação.
-- **RF003**: Gestão de Listas de Compras (criar, editar, listar e excluir).
-- **RF004**: Gestão de Itens (adicionar, editar, listar e excluir itens das listas).
-- **RF005**: Funcionalidade de Busca eficiente por listas e itens.
+### 📝 **Gestão de Listas de Compras – Firestore + Storage**
+- Criar, editar, listar e excluir listas (RF003)  
+- Cada lista possui **título**, **imagem opcional** e **referência ao usuário logado**  
+- Imagens salvas no **Firebase Storage**, com URL salva no Firestore  
+- Exclusão também remove itens associados e imagem, quando houver  
 
-### Não Funcionais
-- Aplicativo desenvolvido com **Android Nativo**.
-- **Design intuitivo**, seguindo as especificações do **Material Design**.
-- Dados armazenados em **memória**, com persistência dinâmica.
+### 🛍️ **Gestão de Itens das Listas – Firestore**
+- CRUD completo de itens: adicionar, editar, listar e excluir 
+- Cada item possui: **nome**, **quantidade**, **unidade** e **categoria**  
+- Itens exibidos em RecyclerView, ordenados e agrupados por categoria  
+- Possibilidade de marcar item como comprado  
+
+### 🔎 **Busca Inteligente – Firestore Queries**
+- Busca eficiente por listas  
+- Busca por itens dentro de uma lista  
+- Implementação usando **consultas diretas no Firestore** 
+
+---
+
+# 🧱 **Arquitetura e Tecnologias Utilizadas**
+- **Kotlin**  
+- **Android Nativo**  
+- **MVVM (Model – View – ViewModel)**  
+- **Repository Pattern**  
+- **Firebase Authentication**  
+- **Firebase Firestore**  
+- **Firebase Storage**  
+- **ViewBinding**  
+- **Material Design Components**
+
+---
+
+# 📝 **Requisitos**
+
+- **RF001:** Login / Logout / Recuperação de Senha  
+- **RF002:** Cadastro de Usuário com validações  
+- **RF003:** CRUD de listas, com imagens e associação ao usuário  
+- **RF004:** CRUD de itens, agrupamento, marcação de comprados  
+- **RF005:** Busca por listas e itens via Firestore Queries  
+
+---
+
+- Arquitetura **MVVM**  
+- Padrão **Repository**  
+- Persistência completa em **Firebase**  
+- Interface seguindo **Material Design**  
+- Implementado com **ViewBinding**  
+
+---
+
